@@ -8,11 +8,13 @@ public class KeepMusicPlaying : MonoBehaviour {
 
     void Awake()
     {
+		/*
         if (!created)
         {
             GetComponent<AudioSource>().Play();
             DontDestroyOnLoad(gameObject);
             created = true;
         }
+		*/
     }
 }
