@@ -1,37 +1,57 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.EventSystems;
 
-public class DragCamera : MonoBehaviour {
+public class CameraController : MonoBehaviour {
 	
 	public float speed = 3f;
+	public Vector3 targetPos;
+	public Vector3 lookPos;
+	public Vector3 lookPosLast;
 	
-	void Update()
-	{
-		OrbitCamera();
-	}
-
-	public void OrbitCamera()
-	{
-		if (Input.GetMouseButton(0) || Input.touchCount > 0)
-		{
-			float x = Input.GetAxis("Mouse X") * 3f;
-			float y = Input.GetAxis("Mouse Y") * 3f;
+	void Awake() { 
+		Game.camera = this;
+		transform.position = new Vector3(-5f, 5f, -5f);
+		targetPos = new Vector3(1f, 1f, -1f);
+	} 
+	
+	void Update() {
+		
+		// keep following target's position
+		lookPos = Game.blocky.transform.position;
+		transform.LookAt(lookPos);
+		if (lookPosLast != null)
+			targetPos += (lookPos-lookPosLast);
+		lookPosLast = lookPos;
+		transform.position += (targetPos-transform.position)*0.1f;
+		
+		// rotate camera angle when drag
+		if ((Input.GetMouseButton(0) && Input.mousePosition.y > 100) || 
+			(Input.touchCount > 0 && Input.GetTouch(0).position.y > 100)) {
+			float dx = Input.GetAxis("Mouse X") * 3f;
+			float dy = Input.GetAxis("Mouse Y") * 3f;
 			if (Input.touchCount > 0) {
-				x = Input.touches[0].deltaPosition.x * 0.2f;
-				y = Input.touches[0].deltaPosition.y * 0.2f;
-			}
-			Vector3 target = Vector3.zero;
+				dx = Input.touches[0].deltaPosition.x * 0.2f;
+				dy = Input.touches[0].deltaPosition.y * 0.2f;
+			} //Vector3.zero;
 			Vector3 angles = transform.eulerAngles;
 			angles.z = 0;
 			transform.eulerAngles = angles;
-			transform.RotateAround(target, Vector3.up, x);
+			transform.RotateAround(lookPos, Vector3.up, dx);
 			if (!(
-				(Mathf.Abs(Mathf.DeltaAngle(angles.x,  90)) < 10 && y < 0) || 
-				(Mathf.Abs(Mathf.DeltaAngle(angles.x, 270)) < 10 && y > 0)))
-				transform.RotateAround(target, Camera.main.transform.right, -y);
-			transform.LookAt(target);
-			Debug.Log(angles);
+				(Mathf.Abs(Mathf.DeltaAngle(angles.x, 90)) < 10 && dy < 0) || 
+				(Mathf.Abs(Mathf.DeltaAngle(angles.x, 10)) < 10 && dy > 0)))
+				transform.RotateAround(lookPos, Camera.main.transform.right, -dy);
+			targetPos = transform.position;
 		}
+	}
+	
+	public void ZoomIn() {
+		targetPos -= (targetPos-lookPos)*0.2f;
+	}
+	
+	public void ZoomOut() {
+		targetPos += (targetPos-lookPos)*0.2f;
 	}
 }
 

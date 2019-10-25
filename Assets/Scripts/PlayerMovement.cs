@@ -41,7 +41,7 @@ public class PlayerMovement : MonoBehaviour {
 
     void Update()
     {
-
+		/*
         // check if player has fallen from ground
 
         if (rb.position.y < 0)
@@ -140,7 +140,7 @@ public class PlayerMovement : MonoBehaviour {
 
 
 
-            /* With phone acceleration
+            With phone acceleration
             if (Input.acceleration.x < 0)
             {   // Left
                 moveLeft = true;
@@ -155,11 +155,11 @@ public class PlayerMovement : MonoBehaviour {
             {   // Right
                 moveLeft = false;
                 moveRight = true;
-            }*/
+            }
 
 
         }
-
+		*/
 
     }
 
