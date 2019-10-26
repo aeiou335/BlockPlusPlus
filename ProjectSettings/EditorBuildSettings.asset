@@ -20,4 +20,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/EndMenu.unity
     guid: 3c96e5b18c074ac47886f89f9792893f
+  - enabled: 0
+    path: 
+    guid: c7f86a2884f6f4ca3b9dbddf3ad47ff6
+  - enabled: 1
+    path: Assets/Scenes/NextLevel.unity
+    guid: 5ebb782e041ef48d4a1583f84f95f644
   m_configObjects: {}

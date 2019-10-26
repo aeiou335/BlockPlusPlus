@@ -180,7 +180,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Play
+  m_Text: Next
 --- !u!222 &63821129
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -246,10 +246,10 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: 340932b9407b32f46b401ad0fd6e8c13, type: 3}
-    m_FontSize: 76
+    m_FontSize: 48
     m_FontStyle: 0
     m_BestFit: 0
-    m_MinSize: 10
+    m_MinSize: 0
     m_MaxSize: 136
     m_Alignment: 4
     m_AlignByGeometry: 0
@@ -257,7 +257,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Congratulations !!!
+  m_Text: You have pass this level !
 --- !u!222 &393479641
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -640,11 +640,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: 'You passed all the levels
-
-    of the Cube Run game. Hit Play
-
-    to practice more, or Exit to exit the game.'
+  m_Text: "Hit Next to next level, \nor Exit to exit the game."
 --- !u!222 &1212462861
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -828,8 +824,8 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 1, g: 0.4482101, b: 0.36320752, a: 1}
-    m_PressedColor: {r: 1, g: 0.3399135, b: 0.23113209, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -848,7 +844,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1106435231}
-        m_MethodName: PlayButtonClicked
+        m_MethodName: NextButtonClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
