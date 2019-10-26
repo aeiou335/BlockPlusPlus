@@ -41,7 +41,7 @@ public class PlayerMovement : MonoBehaviour {
 
     void Update()
     {
-
+		/*
         // check if player has fallen from ground
 
         if (rb.position.y < 0)
@@ -96,9 +96,11 @@ public class PlayerMovement : MonoBehaviour {
 
         if (Application.platform == RuntimePlatform.Android) {
 
-            if (Input.touchCount > 0)
+            if (Input.touchCount > 0 && 
+				Input.GetTouch(0).position.y > Screen.height*0.8)
             {
 
+				
                 // LEFT RIGHT
 
                 if (Input.GetTouch(0).phase == TouchPhase.Stationary)
@@ -138,7 +140,7 @@ public class PlayerMovement : MonoBehaviour {
 
 
 
-            /* With phone acceleration
+            With phone acceleration
             if (Input.acceleration.x < 0)
             {   // Left
                 moveLeft = true;
@@ -153,11 +155,11 @@ public class PlayerMovement : MonoBehaviour {
             {   // Right
                 moveLeft = false;
                 moveRight = true;
-            }*/
+            }
 
 
         }
-
+		*/
 
     }
 
