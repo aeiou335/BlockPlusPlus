@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BlockyController : MonoBehaviour {
 	
-	public enum State { STOP, COOL, FRONT, BACK, LEFT, RIGHT };
+	public enum State { STOP, COOL, FRONT, BACK, LEFT, RIGHT, DEAD, FINISH };
 	public enum Direction { XP, ZP, XN, ZN };
 	public Rigidbody rb;
 	
@@ -43,10 +44,13 @@ public class BlockyController : MonoBehaviour {
 			if (Input.GetKeyDown("right"))
 				TurnRight();
 		}
+		if (transform.position.y < -10) {
+			Game.ReloadLevel();
+		}
 	}
 	
 	// Called every timer ticks
-	public void TimerTick() {
+	void TimerTick() {
 		{ // Breath
 			if (transform.localScale.x > 0.5+0.01) breathValue = -1;
 			if (transform.localScale.x < 0.5-0.01) breathValue = +1;
@@ -55,6 +59,18 @@ public class BlockyController : MonoBehaviour {
 			transform.localScale += deltaVector*breathValue;
 		}
 		switch (state) {
+			case State.FINISH:
+				{ // Count down
+					countDown -= 1;
+					if (countDown < 0) Game.NextLevel();
+				}
+				break;
+			case State.DEAD:
+				{ // Count down
+					countDown -= 1;
+					if (countDown < 0) Game.ReloadLevel();
+				}
+				break;
 			case State.STOP:
 			case State.COOL:
 				{ // Correct position and rotation
@@ -69,9 +85,9 @@ public class BlockyController : MonoBehaviour {
 						if (Mathf.Abs(Mathf.DeltaAngle(eul.y, angle)) < 45)
 							transform.eulerAngles = new Vector3(0, angle, 0);
 				}
-				if (countDown > 0) {
+				{ // Count down
 					countDown -= 1;
-					if (countDown == 0) state = State.STOP;
+					if (countDown < 0) state = State.STOP;
 				}
 				break;
 			case State.FRONT:
@@ -144,4 +160,26 @@ public class BlockyController : MonoBehaviour {
 		}
 	}
 
+	void OnCollisionEnter(Collision collisionInfo) {
+		Debug.Log("tag = "+collisionInfo.collider.tag);
+		switch (collisionInfo.collider.tag) {
+			case "Ground":
+				break;
+			case "Flag":
+				if (state != State.DEAD) {
+					countDown = 50;
+					state = State.FINISH;
+					Debug.Log("FINISH");
+				}
+				break;
+			default:
+				if (state != State.FINISH) {
+					countDown = 50;
+					state = State.DEAD;
+					Debug.Log("DEAD");
+				}
+				break;
+		}
+	}
+	
 }

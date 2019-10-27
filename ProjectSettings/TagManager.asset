@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Obstacle
   - piece
+  - Ground
+  - Flag
   layers:
   - Default
   - TransparentFX
