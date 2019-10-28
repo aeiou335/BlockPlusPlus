@@ -7532,7 +7532,7 @@ MonoBehaviour:
   m_Script: {fileID: -619905303, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_FirstSelected: {fileID: 0}
+  m_FirstSelected: {fileID: 903800996}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
 --- !u!4 &1636896916
@@ -10003,6 +10003,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 0}
+  gameManager: {fileID: 903800997}
 --- !u!114 &2070829906
 MonoBehaviour:
   m_ObjectHideFlags: 0

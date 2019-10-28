@@ -8,6 +8,7 @@ public class BlockyController : MonoBehaviour {
 	public enum State { STOP, COOL, FRONT, BACK, LEFT, RIGHT, DEAD, FINISH };
 	public enum Direction { XP, ZP, XN, ZN };
 	public Rigidbody rb;
+	public GameManager gameManager;
 	
 	float timerDelay = 0.025f;
 	int breathValue;
@@ -62,7 +63,7 @@ public class BlockyController : MonoBehaviour {
 			case State.FINISH:
 				{ // Count down
 					countDown -= 1;
-					if (countDown < 0) Game.NextLevel();
+					if (countDown < 0) gameManager.CompleteLevel();//Game.NextLevel();
 				}
 				break;
 			case State.DEAD:
