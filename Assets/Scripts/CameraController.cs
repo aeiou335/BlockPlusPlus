@@ -40,7 +40,7 @@ public class CameraController : MonoBehaviour {
 			transform.RotateAround(lookPos, Vector3.up, dx);
 			if (!(
 				(Mathf.Abs(Mathf.DeltaAngle(angles.x, 90)) < 10 && dy < 0) || 
-				(Mathf.Abs(Mathf.DeltaAngle(angles.x, 10)) < 10 && dy > 0)))
+				(Mathf.Abs(Mathf.DeltaAngle(angles.x, 0)) < 10 && dy > 0)))
 				transform.RotateAround(lookPos, Camera.main.transform.right, -dy);
 			targetPos = transform.position;
 		}
