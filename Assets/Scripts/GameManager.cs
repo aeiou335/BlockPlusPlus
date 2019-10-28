@@ -15,17 +15,18 @@ public class GameManager : MonoBehaviour {
     public Text level;
     public Text score;
     public bool paused;
-    
+    public static int currentLevel;
+
 
     public void Start()
     {
         fadeInPanel.SetActive(true);
         level.text = "Level " + SceneManager.GetActiveScene().buildIndex;
+        currentLevel = SceneManager.GetActiveScene().buildIndex;
     }
 
     public void Update()
     {
-
         // Pause
 
         if (Input.GetKeyDown("p"))
@@ -42,6 +43,10 @@ public class GameManager : MonoBehaviour {
                 Time.timeScale = 1; // unpause
                 GetComponent<AudioSource>().Play(); // unpause music
             }
+        }
+        // Win (tmp)
+        if (Input.GetKeyDown("w")) {
+            CompleteLevel();
         }
 
     }
@@ -87,11 +92,26 @@ public class GameManager : MonoBehaviour {
     {
         fadeOutPanel.SetActive(true);
         Invoke("LoadNextScreen", 1);
+        
+        if (SceneManager.GetActiveScene().name == "Level03") {
+            Invoke("LoadEndScreen", 1);
+        }
+        else {
+            Invoke("LoadNextScreen", 1);
+        }
+        
+        
     }
-
+    private void LoadEndScreen()
+    {
+        SceneManager.LoadScene("EndMenu");
+    }
+    
     private void LoadNextScreen()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        SceneManager.LoadScene("NextLevel");
     }
-
+    
+    
 }

@@ -11,6 +11,10 @@ public class EndMenuController : MonoBehaviour {
         SceneManager.LoadScene(1);
     }
 
+    public void NextButtonClicked() {
+        SceneManager.LoadScene(GameManager.currentLevel+1);
+    }
+
     public void ExitButtonClicked()
     {
         Application.Quit();
