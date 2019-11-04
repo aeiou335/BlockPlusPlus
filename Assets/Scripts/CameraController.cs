@@ -26,8 +26,9 @@ public class CameraController : MonoBehaviour {
 		transform.position += (targetPos-transform.position)*0.1f;
 		
 		// rotate camera angle when drag
-		if ((Input.GetMouseButton(0) && Input.mousePosition.y > 100) || 
-			(Input.touchCount > 0 && Input.GetTouch(0).position.y > 100)) {
+		if ((!Game.workspace.enabled) && 
+			((Input.GetMouseButton(0) && Input.mousePosition.y > 100) || 
+			(Input.touchCount > 0 && Input.GetTouch(0).position.y > 100))) {
 			float dx = Input.GetAxis("Mouse X") * 3f;
 			float dy = Input.GetAxis("Mouse Y") * 3f;
 			if (Input.touchCount > 0) {
@@ -44,6 +45,11 @@ public class CameraController : MonoBehaviour {
 				transform.RotateAround(lookPos, Camera.main.transform.right, -dy);
 			targetPos = transform.position;
 		}
+		
+		// zoom +/-
+		if (Input.GetKeyDown(",")) ZoomIn();
+		if (Input.GetKeyDown(".")) ZoomOut();
+		
 	}
 	
 	public void ZoomIn() {
