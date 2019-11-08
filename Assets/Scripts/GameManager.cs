@@ -17,9 +17,9 @@ public class GameManager : MonoBehaviour {
     public bool paused;
     public static int currentLevel;
 
-
     public void Start()
     {
+		Game.manager = this;
         fadeInPanel.SetActive(true);
         level.text = "Level " + SceneManager.GetActiveScene().buildIndex;
         currentLevel = SceneManager.GetActiveScene().buildIndex;

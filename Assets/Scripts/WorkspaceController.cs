@@ -4,21 +4,41 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class WorkspaceController : MonoBehaviour
-{	
+{
+	public Canvas canvas;
+	List<string> commands = new List<string>();
+
 	void Awake() {
-		Game.workspace = GetComponent<Canvas>();
-		Game.workspace.enabled = false;
+		Game.workspace = this;
+		canvas = GetComponent<Canvas>();
+		canvas.enabled = false;
 	}
 	
 	void Update() {
 		if (Input.GetKeyDown(KeyCode.Escape)) {
-			Debug.Log("Input.GetKeyDown(p)");
-			Game.workspace.enabled ^= true;
+			Debug.Log("Input.GetKeyDown(KeyCode.Escape)");
+			canvas.enabled ^= true;
 		}
 	}
 	
 	public void ButtonSwitchClicked() {
-		Game.workspace.enabled ^= true;
+		canvas.enabled ^= true;
+	}
+	
+	public void ClearCommands() {
+		commands.Clear();
+	}
+	
+	public void AddCommand(string command) {
+		commands.Add(command);
+	}
+	
+	public List<string> GetCommands() {
+		return commands;
+	}
+	
+	public void PrintCommands() {
+		Debug.Log("commands: "+string.Join(" ", commands));
 	}
 	
 }

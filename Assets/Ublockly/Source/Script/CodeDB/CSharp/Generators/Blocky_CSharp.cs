@@ -27,10 +27,23 @@ namespace UBlockly
         {
             return "blocky_move_forward";
         }
+		
         [CodeGenerator(BlockType = "blocky_move_backward")]
         private string Blocky_Move_Backward(Block block)
         {
             return "blocky_move_backward";
+        }
+		
+        [CodeGenerator(BlockType = "blocky_turn_left")]
+        private string Blocky_Turn_Left(Block block)
+        {
+            return "blocky_turn_left";
+        }
+		
+        [CodeGenerator(BlockType = "blocky_turn_right")]
+        private string Blocky_Turn_Right(Block block)
+        {
+            return "blocky_turn_right";
         }
     }
 }

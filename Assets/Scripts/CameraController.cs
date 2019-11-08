@@ -4,29 +4,39 @@ using UnityEngine.EventSystems;
 
 public class CameraController : MonoBehaviour {
 	
-	public float speed = 3f;
-	public Vector3 targetPos;
-	public Vector3 lookPos;
-	public Vector3 lookPosLast;
+	float speed = 3f;
+	Vector3 targetPos;
+	Vector3 lookPos;
+	Vector3 lookPosLast;
 	
 	void Awake() { 
 		Game.camera = this;
-		transform.position = new Vector3(-5f, 5f, -5f);
-		targetPos = new Vector3(1f, 1f, -1f);
 	} 
+	
+	void Start() {
+		Reset();
+	}
+	
+	public void Reset() {
+		transform.position = new Vector3(-10f, 10f, -10f);
+		targetPos = new Vector3(4.5f, 2.5f, -1.5f);
+		lookPos = Game.blocky.transform.position;
+		lookPosLast = lookPos;
+	}
 	
 	void Update() {
 		
-		// keep following target's position
-		lookPos = Game.blocky.transform.position;
-		transform.LookAt(lookPos);
-		if (lookPosLast != null)
+		{ // keep following target's position
+			lookPos = Game.blocky.transform.position;
+			transform.LookAt(lookPos);
 			targetPos += (lookPos-lookPosLast);
-		lookPosLast = lookPos;
-		transform.position += (targetPos-transform.position)*0.1f;
+			lookPosLast = lookPos;
+			transform.position += (targetPos-transform.position)*0.1f;
+		}
 		
 		// rotate camera angle when drag
-		if ((!Game.workspace.enabled) && 
+		if ((!Game.workspace.canvas.enabled) && 
+			(!Game.blocky.isFrozen()) && 
 			((Input.GetMouseButton(0) && Input.mousePosition.y > 100) || 
 			(Input.touchCount > 0 && Input.GetTouch(0).position.y > 100))) {
 			float dx = Input.GetAxis("Mouse X") * 3f;

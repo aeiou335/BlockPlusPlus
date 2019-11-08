@@ -36,7 +36,7 @@ public class PanelController : MonoBehaviour
 	}
 	
 	public void ButtonSwitchClicked() {
-		Game.workspace.enabled ^= true;
+		Game.workspace.canvas.enabled ^= true;
 		//Invoke("LoadUGUIDemo", 1);
 		//Invoke("LoadLevel01", 10);
 	}

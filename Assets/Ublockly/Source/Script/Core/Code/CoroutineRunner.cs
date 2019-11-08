@@ -80,7 +80,7 @@ namespace UBlockly
         /// </summary>
         /// <param name="itorFunc"></param>
         public bool StopProcess(IEnumerator itorFunc)
-        {
+        {			
             CoroutineStruct value;
             if (mCoroutineDict.TryGetValue(itorFunc, out value))
             {
@@ -144,6 +144,9 @@ namespace UBlockly
         /// <returns></returns>
         IEnumerator SimulateCoroutine(IEnumerator itorFunc)
         {
+			Game.workspace.ClearCommands();
+			Game.workspace.AddCommand("<start>");
+			
             Debug.LogFormat("<color=green>[CodeRunner]SimulateCoroutine: begin - time: {0}.</color>", Time.time);
 
             Stack<IEnumerator> stack = new Stack<IEnumerator>();
@@ -178,6 +181,11 @@ namespace UBlockly
 
             mCoroutineDict.Remove(itorFunc);
             Debug.LogFormat("<color=green>[CodeRunner]SimulateCoroutine: end - time: {0}.</color>", Time.time);
+			
+			Game.workspace.AddCommand("<stop>");
+			Game.workspace.PrintCommands();
+			Game.workspace.canvas.enabled = false;
+			Game.blocky.StartRunning();
         }
     }
 }

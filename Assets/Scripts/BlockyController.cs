@@ -5,36 +5,57 @@ using UnityEngine.SceneManagement;
 
 public class BlockyController : MonoBehaviour {
 	
-	public enum State { STOP, COOL, FRONT, BACK, LEFT, RIGHT, DEAD, FINISH };
+	public enum State { STOP, COOL, FRONT, BACK, LEFT, RIGHT, DEAD, FINISH, RESET, MENU };
 	public enum Direction { XP, ZP, XN, ZN };
 	public Rigidbody rb;
 	public GameManager gameManager;
+	public State state;
 	
 	float timerDelay = 0.025f;
 	int breathValue;
 	int turnTarget;
 	int countDown;
 	Vector3 rotateAxis;
-	State state;
 	Direction direction;
 	Vector3 targetPos;
 	Vector3 targetAngle;
+	bool isRunning;
+	int commandIndex;
 	
 	void Awake() { 
 		Game.blocky = this;
-	} 
+	}
 	
 	void Start() {
-		
 		rb = GetComponent<Rigidbody>();
 		InvokeRepeating("TimerTick", timerDelay, timerDelay);
-		
+		if (SceneManager.GetActiveScene().name == "Menu")
+			ResetForMenu();
+		else Reset();
+	}
+	
+	public void Reset() {
+		transform.position = new Vector3(0.5f, 0.25f, 0.5f);
+		transform.eulerAngles = new Vector3(0, 0, 0);
+		rb.velocity = new Vector3(0, 0, 0);
 		breathValue = 1;
-		state = State.STOP;
+		countDown = 50;
+		state = State.RESET;
 		direction = Direction.XP;
+		isRunning = false;
+	}
+	
+	public void ResetForMenu() {
+		breathValue = 1;
+		state = State.MENU;
+	}
+	
+	public bool isFrozen() {
+		return (state == State.RESET || state == State.MENU);
 	}
 	
 	void Update() {
+		if (isFrozen()) return;
 		if (state == State.STOP) {
 			if (Input.GetKeyDown("up"))
 				MoveForward();
@@ -46,7 +67,7 @@ public class BlockyController : MonoBehaviour {
 				TurnRight();
 		}
 		if (transform.position.y < -10) {
-			Game.ReloadLevel();
+			state = State.DEAD;
 		}
 	}
 	
@@ -60,32 +81,32 @@ public class BlockyController : MonoBehaviour {
 			transform.localScale += deltaVector*breathValue;
 		}
 		switch (state) {
+			case State.RESET:
+				{ // Count down
+					countDown -= 1;
+					if (countDown < 0) {
+						state = State.STOP;
+					}
+				}
+				break;
 			case State.FINISH:
 				{ // Count down
 					countDown -= 1;
-					if (countDown < 0) gameManager.CompleteLevel();//Game.NextLevel();
+					if (countDown < 0) Game.manager.CompleteLevel();
 				}
 				break;
 			case State.DEAD:
 				{ // Count down
 					countDown -= 1;
-					if (countDown < 0) Game.ReloadLevel();
+					if (countDown < 0) Game.ReloadLevel(); //Game.manager.Restart();
 				}
 				break;
 			case State.STOP:
+				Correction();
+				if (isRunning) RunCommand();
+				break;
 			case State.COOL:
-				{ // Correct position and rotation
-					Vector3 pos = transform.position;
-					Vector3 eul = transform.eulerAngles;
-					float dx = (pos.x < 0? -0.5f: +0.5f);
-					float dz = (pos.z < 0? -0.5f: +0.5f);
-					targetPos = new Vector3((int)pos.x+dx, pos.y, (int)pos.z+dz);
-					transform.position += (targetPos-transform.position)*0.1f;
-					int[] angles = { 90, 180, 270, 360 };
-					foreach (int angle in angles)
-						if (Mathf.Abs(Mathf.DeltaAngle(eul.y, angle)) < 45)
-							transform.eulerAngles = new Vector3(0, angle, 0);
-				}
+				Correction();
 				{ // Count down
 					countDown -= 1;
 					if (countDown < 0) state = State.STOP;
@@ -107,6 +128,29 @@ public class BlockyController : MonoBehaviour {
 				}
 				break;
 		}
+	}
+	
+	public void StartRunning() {
+		commandIndex = 0;
+		isRunning = true;
+	}
+	
+	void RunCommand() {
+		var commands = Game.workspace.GetCommands();
+		if (commandIndex >= commands.Count) {
+			isRunning = false;
+			countDown = 50;
+			state = State.DEAD;
+			return;
+		}
+		switch (commands[commandIndex]) {
+			case "blocky_move_forward": MoveForward(); break;
+			case "blocky_move_backward": MoveBackward(); break;
+			case "blocky_turn_left": TurnLeft(); break;
+			case "blocky_turn_right": TurnRight(); break;
+			default: break;
+		}
+		commandIndex += 1;
 	}
 	
 	// Move forward 1 block
@@ -160,9 +204,25 @@ public class BlockyController : MonoBehaviour {
 			case Direction.ZN: direction = Direction.XN; turnTarget = 180; break;
 		}
 	}
+	
+	// Correct position and rotation
+	void Correction() { 
+		Vector3 pos = transform.position;
+		Vector3 eul = transform.eulerAngles;
+		float dx = (pos.x < 0? -0.5f: +0.5f);
+		float dz = (pos.z < 0? -0.5f: +0.5f);
+		targetPos = new Vector3((int)pos.x+dx, pos.y, (int)pos.z+dz);
+		transform.position += (targetPos-transform.position)*0.1f;
+		int[] angles = { 90, 180, 270, 360 };
+		foreach (int angle in angles)
+			if (Mathf.Abs(Mathf.DeltaAngle(eul.y, angle)) < 45)
+				transform.eulerAngles = new Vector3(0, angle, 0);
+	}
 
+	// On Collision
 	void OnCollisionEnter(Collision collisionInfo) {
-		Debug.Log("tag = "+collisionInfo.collider.tag);
+		if (isFrozen()) return;
+		//Debug.Log("tag = "+collisionInfo.collider.tag);
 		switch (collisionInfo.collider.tag) {
 			case "Ground":
 				break;

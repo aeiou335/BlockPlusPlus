@@ -152,6 +152,13 @@ namespace UBlockly.UGUI
         /// </summary>
         public Color GetColorOfBlockView(BlockView view)
         {
+			switch (view.BlockType) {
+				case "blocky_move_forward": return new Color(1.0f, 0.6f, 0.3f);
+				case "blocky_move_backward": return new Color(1.0f, 0.6f, 0.3f);
+				case "blocky_turn_left": return new Color(0.0f, 0.8f, 0.9f);
+				case "blocky_turn_right": return new Color(0.0f, 0.8f, 0.9f);
+				default: break;
+			}
             foreach (var category in mConfig.BlockCategoryList)
             {
                 foreach (string type in category.BlockList)

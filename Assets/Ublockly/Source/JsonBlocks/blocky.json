@@ -13,4 +13,18 @@
     "nextStatement": null,
     "colour": "290",
   },
+  {
+    "type": "blocky_turn_left",
+    "message0": "Turn Left",
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": "290",
+  },
+  {
+    "type": "blocky_turn_right",
+    "message0": "Turn Right",
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": "290",
+  },
 ]

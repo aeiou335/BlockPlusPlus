@@ -26,14 +26,14 @@ using System.Linq;
 
 namespace UBlockly
 {
-	
     [CodeInterpreter(BlockType = "blocky_move_forward")]
     public class Blocky_Move_Forward_Cmdtor : EnumeratorCmdtor
     {
         protected override IEnumerator Execute(Block block)
         {
 			yield return null;
-            UnityEngine.Debug.Log("blocky_move_forward");
+			Game.workspace.AddCommand("blocky_move_forward");
+            //UnityEngine.Debug.Log("blocky_move_forward");
         }
     }
 	
@@ -43,8 +43,30 @@ namespace UBlockly
         protected override IEnumerator Execute(Block block)
         {
 			yield return null;
-            UnityEngine.Debug.Log("blocky_move_backward");
+			Game.workspace.AddCommand("blocky_move_backward");
+            //UnityEngine.Debug.Log("blocky_move_backward");
         }
     }
 	
+    [CodeInterpreter(BlockType = "blocky_turn_left")]
+    public class Blocky_Turn_Left_Cmdtor : EnumeratorCmdtor
+    {
+        protected override IEnumerator Execute(Block block)
+        {
+			yield return null;
+			Game.workspace.AddCommand("blocky_turn_left");
+            //UnityEngine.Debug.Log("blocky_turn_left");
+        }
+    }
+	
+    [CodeInterpreter(BlockType = "blocky_turn_right")]
+    public class Blocky_Turn_Right_Cmdtor : EnumeratorCmdtor
+    {
+        protected override IEnumerator Execute(Block block)
+        {
+			yield return null;
+			Game.workspace.AddCommand("blocky_turn_right");
+            //UnityEngine.Debug.Log("blocky_turn_right");
+        }
+    }
 }
