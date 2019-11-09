@@ -10,6 +10,22 @@ public class PanelController : MonoBehaviour
 	
 	void Update() {
 	}
+	
+	public void ButtonZoomInClicked() {
+		Game.camera.ZoomIn();
+	}
+	
+	public void ButtonZoomOutClicked() {
+		Game.camera.ZoomOut();
+	}
+	
+	public void ButtonSwitchClicked() {
+		Game.workspace.canvas.enabled ^= true;
+		//Invoke("LoadUGUIDemo", 1);
+		//Invoke("LoadLevel01", 10);
+	}
+	
+	/*
 
 	public void ButtonUpClicked() {
 		Game.blocky.MoveForward();
@@ -27,20 +43,6 @@ public class PanelController : MonoBehaviour
 		Game.blocky.TurnRight();
 	}
 	
-	public void ButtonZoomInClicked() {
-		Game.camera.ZoomIn();
-	}
-	
-	public void ButtonZoomOutClicked() {
-		Game.camera.ZoomOut();
-	}
-	
-	public void ButtonSwitchClicked() {
-		Game.workspace.canvas.enabled ^= true;
-		//Invoke("LoadUGUIDemo", 1);
-		//Invoke("LoadLevel01", 10);
-	}
-	
     private void LoadUGUIDemo()
     {
         SceneManager.LoadScene("UGUIDemo");
@@ -50,4 +52,5 @@ public class PanelController : MonoBehaviour
     {
         SceneManager.LoadScene("Level01");
     }
+	*/
 }

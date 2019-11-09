@@ -4,34 +4,44 @@ using UnityEngine.EventSystems;
 
 public class CameraController : MonoBehaviour {
 	
-	float speed = 3f;
-	Vector3 targetPos;
-	Vector3 lookPos;
-	Vector3 lookPosLast;
+	readonly Vector3 resetPosition = new Vector3(-10f, 10f, -10f);
+	readonly Vector3 resetTargetPosition = new Vector3(4.5f, 2.5f, 1.5f);
+	readonly float speed = 3f;
+	
+	Vector3 targetPosition;
+	Vector3 lookPosition;
+	Vector3 lookPositionLast;
 	
 	void Awake() { 
 		Game.camera = this;
 	} 
 	
 	void Start() {
-		Reset();
 	}
 	
 	public void Reset() {
-		transform.position = new Vector3(-10f, 10f, -10f);
-		targetPos = new Vector3(4.5f, 2.5f, -1.5f);
-		lookPos = Game.blocky.transform.position;
-		lookPosLast = lookPos;
+		lookPosition = Game.blocky.transform.position;
+		lookPositionLast = lookPosition;
+		var angle = 0.0f;
+		switch (Game.blocky.direction) {
+			case "XP": angle = Mathf.PI*0.0f; break;
+			case "ZN": angle = Mathf.PI*0.5f; break;
+			case "XN": angle = Mathf.PI*1.0f; break;
+			case "ZP": angle = Mathf.PI*1.5f; break;
+		}
+		Debug.Log(angle);
+		transform.position = RotateY(resetPosition, angle) + lookPosition;
+		targetPosition = RotateY(resetTargetPosition, angle) + lookPosition;
 	}
 	
 	void Update() {
 		
 		{ // keep following target's position
-			lookPos = Game.blocky.transform.position;
-			transform.LookAt(lookPos);
-			targetPos += (lookPos-lookPosLast);
-			lookPosLast = lookPos;
-			transform.position += (targetPos-transform.position)*0.1f;
+			lookPosition = Game.blocky.transform.position;
+			transform.LookAt(lookPosition);
+			targetPosition += (lookPosition-lookPositionLast);
+			lookPositionLast = lookPosition;
+			transform.position += (targetPosition-transform.position)*0.1f;
 		}
 		
 		// rotate camera angle when drag
@@ -44,16 +54,16 @@ public class CameraController : MonoBehaviour {
 			if (Input.touchCount > 0) {
 				dx = Input.touches[0].deltaPosition.x * 0.2f;
 				dy = Input.touches[0].deltaPosition.y * 0.2f;
-			} //Vector3.zero;
+			}
 			Vector3 angles = transform.eulerAngles;
 			angles.z = 0;
 			transform.eulerAngles = angles;
-			transform.RotateAround(lookPos, Vector3.up, dx);
+			transform.RotateAround(lookPosition, Vector3.up, dx);
 			if (!(
 				(Mathf.Abs(Mathf.DeltaAngle(angles.x, 90)) < 10 && dy < 0) || 
 				(Mathf.Abs(Mathf.DeltaAngle(angles.x, 0)) < 10 && dy > 0)))
-				transform.RotateAround(lookPos, Camera.main.transform.right, -dy);
-			targetPos = transform.position;
+				transform.RotateAround(lookPosition, Camera.main.transform.right, -dy);
+			targetPosition = transform.position;
 		}
 		
 		// zoom +/-
@@ -62,12 +72,20 @@ public class CameraController : MonoBehaviour {
 		
 	}
 	
+	// rotate a point around Y-axis by some angle
+	Vector3 RotateY(Vector3 point, float angle) {
+		float x = Mathf.Cos(angle)*point.x+Mathf.Sin(angle)*point.z;
+		float y = point.y;
+		float z = Mathf.Cos(angle)*point.z-Mathf.Sin(angle)*point.x;
+		return new Vector3(x, y, z);
+	}
+	
 	public void ZoomIn() {
-		targetPos -= (targetPos-lookPos)*0.2f;
+		targetPosition -= (targetPosition-lookPosition)*0.2f;
 	}
 	
 	public void ZoomOut() {
-		targetPos += (targetPos-lookPos)*0.2f;
+		targetPosition += (targetPosition-lookPosition)*0.2f;
 	}
 }
 

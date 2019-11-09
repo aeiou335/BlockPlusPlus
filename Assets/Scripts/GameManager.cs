@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour {
 
     public void Start()
     {
-		Game.manager = this;
+		Game.gameManager = this;
         fadeInPanel.SetActive(true);
         level.text = "Level " + SceneManager.GetActiveScene().buildIndex;
         currentLevel = SceneManager.GetActiveScene().buildIndex;
@@ -93,7 +93,7 @@ public class GameManager : MonoBehaviour {
         fadeOutPanel.SetActive(true);
         Invoke("LoadNextScreen", 1);
         
-        if (SceneManager.GetActiveScene().name == "Level03") {
+        if (SceneManager.GetActiveScene().name == "Level04") {
             Invoke("LoadEndScreen", 1);
         }
         else {

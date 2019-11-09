@@ -111,8 +111,15 @@ namespace UBlockly.UGUI
             mConnection.Location.y = (int) relative.y;
 
             // Insert it into its new location in the database.
-            if (!mConnection.Hidden)
-                mConnection.DB.AddConnection(mConnection);
+			try
+			{
+				if (!mConnection.Hidden)
+					mConnection.DB.AddConnection(mConnection);
+			}
+			catch (Exception e)
+			{
+				Debug.Log(e);
+			}
             
             // update target block view's
             if (mTargetBlockView != null)
@@ -187,7 +194,15 @@ namespace UBlockly.UGUI
         {
             Connection closestFound;
             int radius;
-            mConnection.DBOpposite.SearchForClosest(mConnection, searchLimit, new Vector2<int>(0, 0), out closestFound, out radius);
+			try
+			{               
+				mConnection.DBOpposite.SearchForClosest(mConnection, searchLimit, new Vector2<int>(0, 0), out closestFound, out radius);
+			}
+			catch (Exception e)
+			{
+				Debug.Log(e);
+				return false;
+			}
             if (closestFound != null)
             {
                 closest = closestFound;

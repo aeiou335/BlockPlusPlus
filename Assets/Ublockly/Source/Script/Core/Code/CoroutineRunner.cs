@@ -183,9 +183,8 @@ namespace UBlockly
             Debug.LogFormat("<color=green>[CodeRunner]SimulateCoroutine: end - time: {0}.</color>", Time.time);
 			
 			Game.workspace.AddCommand("<stop>");
-			Game.workspace.PrintCommands();
 			Game.workspace.canvas.enabled = false;
-			Game.blocky.StartRunning();
+			Game.blocky.CommandStart();
         }
     }
 }
