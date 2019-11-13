@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 public class CameraController : MonoBehaviour {
 	
 	readonly Vector3 resetPosition = new Vector3(-10f, 10f, -10f);
-	readonly Vector3 resetTargetPosition = new Vector3(4.5f, 2.5f, 1.5f);
+	readonly Vector3 resetTargetPosition = new Vector3(3.5f, 2.0f, 1.0f);
 	readonly float speed = 3f;
 	
 	Vector3 targetPosition;

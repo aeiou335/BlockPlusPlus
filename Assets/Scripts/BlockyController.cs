@@ -65,8 +65,8 @@ public class BlockyController : MonoBehaviour {
 	// Called every timer ticks
 	void TimerTick() {
 		{ // Breath
-			if (transform.localScale.x > 0.5+0.01) breathValue = -1;
-			if (transform.localScale.x < 0.5-0.01) breathValue = +1;
+			if (transform.localScale.x > 0.5+0.015) breathValue = -1;
+			if (transform.localScale.x < 0.5-0.015) breathValue = +1;
 			float delta = timerDelay*0.1f;
 			Vector3 deltaVector = new Vector3(delta, -delta, delta);
 			transform.localScale += deltaVector*breathValue;
@@ -110,6 +110,11 @@ public class BlockyController : MonoBehaviour {
 	// is frozen?
 	public bool isFrozen() {
 		return (state == "RESET" || state == "MENU");
+	}
+	
+	// is ended?
+	public bool isEnded() {
+		return (state == "DEAD" || state == "FINISH");
 	}
 	
 	// Start running command
@@ -205,24 +210,20 @@ public class BlockyController : MonoBehaviour {
 
 	// On Collision
 	void OnCollisionEnter(Collision collisionInfo) {
-		if (isFrozen()) return;
+		if (isFrozen() || isEnded()) return;
 		//Debug.Log("tag = "+collisionInfo.collider.tag);
 		switch (collisionInfo.collider.tag) {
 			case "Ground":
 				break;
 			case "Flag":
-				if (state != "DEAD") {
-					countDown = 50;
-					state = "FINISH";
-					Debug.Log("FINISH");
-				}
+				countDown = 50;
+				state = "FINISH";
+				Debug.Log("FINISH");
 				break;
 			default:
-				if (state != "FINISH") {
-					countDown = 50;
-					state = "DEAD";
-					Debug.Log("DEAD");
-				}
+				countDown = 50;
+				state = "DEAD";
+				Debug.Log("DEAD");
 				break;
 		}
 	}
