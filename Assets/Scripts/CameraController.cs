@@ -11,6 +11,7 @@ public class CameraController : MonoBehaviour {
 	Vector3 targetPosition;
 	Vector3 lookPosition;
 	Vector3 lookPositionLast;
+	float lastDistance;
 	
 	void Awake() { 
 		Game.camera = this;
@@ -20,6 +21,7 @@ public class CameraController : MonoBehaviour {
 	}
 	
 	public void Reset() {
+		lastDistance = -1;
 		lookPosition = Game.blocky.transform.position;
 		lookPositionLast = lookPosition;
 		var angle = 0.0f;
@@ -29,12 +31,15 @@ public class CameraController : MonoBehaviour {
 			case "XN": angle = Mathf.PI*1.0f; break;
 			case "ZP": angle = Mathf.PI*1.5f; break;
 		}
-		Debug.Log(angle);
+		//Debug.Log(angle);
 		transform.position = RotateY(resetPosition, angle) + lookPosition;
 		targetPosition = RotateY(resetTargetPosition, angle) + lookPosition;
 	}
 	
 	void Update() {
+		
+		if (Game.workspace.canvas.enabled) return;
+		if (Game.blocky.isFrozen()) return;
 		
 		{ // keep following target's position
 			lookPosition = Game.blocky.transform.position;
@@ -45,10 +50,8 @@ public class CameraController : MonoBehaviour {
 		}
 		
 		// rotate camera angle when drag
-		if ((!Game.workspace.canvas.enabled) && 
-			(!Game.blocky.isFrozen()) && 
-			((Input.GetMouseButton(0) && Input.mousePosition.y > 100) || 
-			(Input.touchCount > 0 && Input.GetTouch(0).position.y > 100))) {
+		if ((Input.touchCount == 0 && Input.GetMouseButton(0) && Input.mousePosition.y > 100) || 
+			(Input.touchCount == 1 && Input.GetTouch(0).position.y > 100)) {
 			float dx = Input.GetAxis("Mouse X") * 3f;
 			float dy = Input.GetAxis("Mouse Y") * 3f;
 			if (Input.touchCount > 0) {
@@ -66,7 +69,28 @@ public class CameraController : MonoBehaviour {
 			targetPosition = transform.position;
 		}
 		
-		// zoom +/-
+		// 2-touch zoom
+		if (Input.touchCount != 2) 
+			lastDistance = -1;
+		if (Input.touchCount == 2) {
+			Vector3 pos1 = Input.GetTouch(0).position;
+			Vector3 pos2 = Input.GetTouch(1).position;
+			float distance = (pos1-pos2).magnitude;
+			if (lastDistance == -1)
+				lastDistance = distance;
+			if (distance - lastDistance > 50) {
+				Debug.Log("2-Touch Zoom In");
+				ZoomIn(); 
+				lastDistance = distance;
+			}
+			if (lastDistance - distance > 50) {
+				Debug.Log("2-Touch Zoom Out");
+				ZoomOut(); 
+				lastDistance = distance;
+			}
+		}
+		
+		// zoom
 		if (Input.GetKeyDown(",")) ZoomIn();
 		if (Input.GetKeyDown(".")) ZoomOut();
 		
@@ -81,10 +105,12 @@ public class CameraController : MonoBehaviour {
 	}
 	
 	public void ZoomIn() {
+		if ((transform.position - lookPosition).magnitude < 1) return;
 		targetPosition -= (targetPosition-lookPosition)*0.2f;
 	}
 	
 	public void ZoomOut() {
+		if ((transform.position - lookPosition).magnitude > 100) return;
 		targetPosition += (targetPosition-lookPosition)*0.2f;
 	}
 }

@@ -59,7 +59,7 @@ public class GameManager : MonoBehaviour {
             score.text = "500";
             gameOver = true;
             youWonPanel.SetActive(true);
-            FindObjectOfType<PlayerMovement>().enabled = false; // stop movement of player
+            //FindObjectOfType<PlayerMovement>().enabled = false; // stop movement of player
             Invoke("NextLevel", restartLevelDelay);
         }
     }
@@ -69,7 +69,7 @@ public class GameManager : MonoBehaviour {
         if (!gameOver)
         {
             gameOver = true;
-            FindObjectOfType<PlayerMovement>().enabled = false; // stop movement of player
+            //FindObjectOfType<PlayerMovement>().enabled = false; // stop movement of player
             FindObjectOfType<Camera>().backgroundColor = gameOverColor; // turn background to red
             RenderSettings.fogColor = gameOverColor; // turn fog to red
             Invoke("Restart", restartLevelDelay);
