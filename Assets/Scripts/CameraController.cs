@@ -38,9 +38,6 @@ public class CameraController : MonoBehaviour {
 	
 	void Update() {
 		
-		if (Game.workspace.canvas.enabled) return;
-		if (Game.blocky.isFrozen()) return;
-		
 		{ // keep following target's position
 			lookPosition = Game.blocky.transform.position;
 			transform.LookAt(lookPosition);
@@ -48,6 +45,9 @@ public class CameraController : MonoBehaviour {
 			lookPositionLast = lookPosition;
 			transform.position += (targetPosition-transform.position)*0.1f;
 		}
+		
+		if (Game.workspace.canvas.enabled) return;
+		if (Game.blocky.isFrozen()) return;
 		
 		// rotate camera angle when drag
 		if ((Input.touchCount == 0 && Input.GetMouseButton(0) && Input.mousePosition.y > 100) || 

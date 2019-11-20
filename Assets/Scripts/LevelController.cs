@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class GameManager : MonoBehaviour {
+public class LevelController : MonoBehaviour {
 
     public bool gameOver = false;
     public float restartLevelDelay = 2f;
@@ -13,16 +13,16 @@ public class GameManager : MonoBehaviour {
     public GameObject fadeInPanel;
     public GameObject youWonPanel;
     public Text level;
-    public Text score;
+    public Text diamondNumber;
     public bool paused;
-    public static int currentLevel;
+    //public static int currentLevel;
 
     public void Start()
     {
-		Game.gameManager = this;
+		Game.level = this;
         fadeInPanel.SetActive(true);
         level.text = "Level " + SceneManager.GetActiveScene().buildIndex;
-        currentLevel = SceneManager.GetActiveScene().buildIndex;
+        //currentLevel = SceneManager.GetActiveScene().buildIndex;
     }
 
     public void Update()
@@ -56,7 +56,7 @@ public class GameManager : MonoBehaviour {
     {
         if (!gameOver)
         {
-            score.text = "500";
+            //score.text = "500";
             gameOver = true;
             youWonPanel.SetActive(true);
             //FindObjectOfType<PlayerMovement>().enabled = false; // stop movement of player

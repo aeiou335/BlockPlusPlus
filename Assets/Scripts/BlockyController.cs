@@ -19,6 +19,7 @@ public class BlockyController : MonoBehaviour {
 	Vector3 turnAxis;
 	bool commandRunning;
 	int commandIndex;
+	int diamondNumber;
 	
 	void Awake() { 
 		Game.blocky = this;
@@ -53,6 +54,7 @@ public class BlockyController : MonoBehaviour {
 		commandRunning = false;
 		countDown = 50;
 		state = "RESET";
+		diamondNumber = 0;
 	}
 	
 	void Update() {
@@ -76,10 +78,10 @@ public class BlockyController : MonoBehaviour {
 				if (--countDown < 0) state = "STOP";
 				break;
 			case "FINISH":
-				if (--countDown < 0) Game.NextLevel();
+				if (--countDown < 0) { state = "END"; Game.NextLevel(); }
 				break;
 			case "DEAD":
-				if (--countDown < 0) Game.ReloadLevel();
+				if (--countDown < 0) { state = "END"; Game.ReloadLevel(); }
 				break;
 			case "STOP":
 				Correction();
@@ -104,6 +106,8 @@ public class BlockyController : MonoBehaviour {
 					state = "COOL";
 				}
 				break;
+			default:
+				break;
 		}
 	}
 	
@@ -114,7 +118,7 @@ public class BlockyController : MonoBehaviour {
 	
 	// is ended?
 	public bool isEnded() {
-		return (state == "DEAD" || state == "FINISH");
+		return (state == "END" || state == "DEAD" || state == "FINISH");
 	}
 	
 	// Start running command
@@ -219,6 +223,11 @@ public class BlockyController : MonoBehaviour {
 				countDown = 50;
 				state = "FINISH";
 				Debug.Log("FINISH");
+				break;
+			case "Diamond":
+				diamondNumber += 1;
+				Game.level.diamondNumber.text = "Diamond: "+diamondNumber;
+				Debug.Log("Diamond Touched");
 				break;
 			default:
 				countDown = 50;
