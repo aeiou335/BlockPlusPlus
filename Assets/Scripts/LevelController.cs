@@ -61,11 +61,11 @@ public class LevelController : MonoBehaviour {
             //score.text = "500";
             gameOver = true;
             youWonPanel.SetActive(true);
-            FindObjectOfType<PlayerMovement>().enabled = false; // stop movement of player
+            //FindObjectOfType<PlayerMovement>().enabled = false; // stop movement of player
             //Setting Int for Index
-            if (currentLevel+1 > PlayerPrefs.GetInt("levelAt"))
+            if (Game.levelNumber+1 > PlayerPrefs.GetInt("levelAt"))
             {
-                PlayerPrefs.SetInt("levelAt", currentLevel+1);
+                PlayerPrefs.SetInt("levelAt", Game.levelNumber+1);
             }
 
             Invoke("NextLevel", restartLevelDelay);
