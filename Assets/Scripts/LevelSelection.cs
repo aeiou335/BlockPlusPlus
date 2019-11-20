@@ -20,5 +20,8 @@ public class LevelSelection : MonoBehaviour
                 lvlButtons[i].interactable = false;
         }
     }
-
+    public void PlayButtonClicked(int level)
+    {
+        SceneManager.LoadScene(level+1);
+    }
 }

@@ -4,54 +4,114 @@ using UnityEngine.EventSystems;
 
 public class CameraController : MonoBehaviour {
 	
-	public float speed = 3f;
-	public Vector3 targetPos;
-	public Vector3 lookPos;
-	public Vector3 lookPosLast;
+	readonly Vector3 resetPosition = new Vector3(-10f, 10f, -10f);
+	readonly Vector3 resetTargetPosition = new Vector3(3.5f, 2.0f, 1.0f);
+	readonly float speed = 3f;
+	
+	Vector3 targetPosition;
+	Vector3 lookPosition;
+	Vector3 lookPositionLast;
+	float lastDistance;
 	
 	void Awake() { 
 		Game.camera = this;
-		transform.position = new Vector3(-5f, 5f, -5f);
-		targetPos = new Vector3(1f, 1f, -1f);
 	} 
+	
+	void Start() {
+	}
+	
+	public void Reset() {
+		lastDistance = -1;
+		lookPosition = Game.blocky.transform.position;
+		lookPositionLast = lookPosition;
+		var angle = 0.0f;
+		switch (Game.blocky.direction) {
+			case "XP": angle = Mathf.PI*0.0f; break;
+			case "ZN": angle = Mathf.PI*0.5f; break;
+			case "XN": angle = Mathf.PI*1.0f; break;
+			case "ZP": angle = Mathf.PI*1.5f; break;
+		}
+		//Debug.Log(angle);
+		transform.position = RotateY(resetPosition, angle) + lookPosition;
+		targetPosition = RotateY(resetTargetPosition, angle) + lookPosition;
+	}
 	
 	void Update() {
 		
-		// keep following target's position
-		lookPos = Game.blocky.transform.position;
-		transform.LookAt(lookPos);
-		if (lookPosLast != null)
-			targetPos += (lookPos-lookPosLast);
-		lookPosLast = lookPos;
-		transform.position += (targetPos-transform.position)*0.1f;
+		{ // keep following target's position
+			lookPosition = Game.blocky.transform.position;
+			transform.LookAt(lookPosition);
+			targetPosition += (lookPosition-lookPositionLast);
+			lookPositionLast = lookPosition;
+			transform.position += (targetPosition-transform.position)*0.1f;
+		}
+		
+		if (Game.workspace.canvas.enabled) return;
+		if (Game.blocky.isFrozen()) return;
 		
 		// rotate camera angle when drag
-		if ((Input.GetMouseButton(0) && Input.mousePosition.y > 100) || 
-			(Input.touchCount > 0 && Input.GetTouch(0).position.y > 100)) {
+		if ((Input.touchCount == 0 && Input.GetMouseButton(0) && Input.mousePosition.y > 100) || 
+			(Input.touchCount == 1 && Input.GetTouch(0).position.y > 100)) {
 			float dx = Input.GetAxis("Mouse X") * 3f;
 			float dy = Input.GetAxis("Mouse Y") * 3f;
 			if (Input.touchCount > 0) {
 				dx = Input.touches[0].deltaPosition.x * 0.2f;
 				dy = Input.touches[0].deltaPosition.y * 0.2f;
-			} //Vector3.zero;
+			}
 			Vector3 angles = transform.eulerAngles;
 			angles.z = 0;
 			transform.eulerAngles = angles;
-			transform.RotateAround(lookPos, Vector3.up, dx);
+			transform.RotateAround(lookPosition, Vector3.up, dx);
 			if (!(
 				(Mathf.Abs(Mathf.DeltaAngle(angles.x, 90)) < 10 && dy < 0) || 
 				(Mathf.Abs(Mathf.DeltaAngle(angles.x, 0)) < 10 && dy > 0)))
-				transform.RotateAround(lookPos, Camera.main.transform.right, -dy);
-			targetPos = transform.position;
+				transform.RotateAround(lookPosition, Camera.main.transform.right, -dy);
+			targetPosition = transform.position;
 		}
+		
+		// 2-touch zoom
+		if (Input.touchCount != 2) 
+			lastDistance = -1;
+		if (Input.touchCount == 2) {
+			Vector3 pos1 = Input.GetTouch(0).position;
+			Vector3 pos2 = Input.GetTouch(1).position;
+			float distance = (pos1-pos2).magnitude;
+			if (lastDistance == -1)
+				lastDistance = distance;
+			if (distance - lastDistance > 50) {
+				Debug.Log("2-Touch Zoom In");
+				ZoomIn(); 
+				lastDistance = distance;
+			}
+			if (lastDistance - distance > 50) {
+				Debug.Log("2-Touch Zoom Out");
+				ZoomOut(); 
+				lastDistance = distance;
+			}
+		}
+		
+		// zoom
+		if (Input.GetKeyDown(",")) ZoomIn();
+		if (Input.GetKeyDown(".")) ZoomOut();
+		
+	}
+	
+	// rotate a point around Y-axis by some angle
+	Vector3 RotateY(Vector3 point, float angle) {
+		float x = Mathf.Cos(angle)*point.x+Mathf.Sin(angle)*point.z;
+		float y = point.y;
+		float z = Mathf.Cos(angle)*point.z-Mathf.Sin(angle)*point.x;
+		return new Vector3(x, y, z);
 	}
 	
 	public void ZoomIn() {
-		targetPos -= (targetPos-lookPos)*0.2f;
+		if ((transform.position - lookPosition).magnitude < 1) return;
+		targetPosition -= (targetPosition-lookPosition)*0.2f;
 	}
 	
 	public void ZoomOut() {
-		targetPos += (targetPos-lookPos)*0.2f;
+		if ((transform.position - lookPosition).magnitude > 100) return;
+		targetPosition += (targetPosition-lookPosition)*0.2f;
 	}
 }
 

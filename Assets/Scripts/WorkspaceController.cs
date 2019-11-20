@@ -1,30 +1,37 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class WorkspaceController : MonoBehaviour
-{	
-	public void ButtonUpClicked() {
-		Game.blocky.MoveForward();
+{
+	public Canvas canvas;
+	
+	List<string> commands = new List<string>();
+
+	void Awake() {
+		Game.workspace = this;
+		canvas = GetComponent<Canvas>();
+		canvas.enabled = false;
 	}
 	
-	public void ButtonDownClicked() {
-		Game.blocky.MoveBackward();
+	void Update() {
 	}
 	
-	public void ButtonLeftClicked() {
-		Game.blocky.TurnLeft();
+	public void ButtonSwitchClicked() {
+		canvas.enabled ^= true;
 	}
 	
-	public void ButtonRightClicked() {
-		Game.blocky.TurnRight();
+	public void ClearCommands() {
+		commands.Clear();
 	}
 	
-	public void ButtonZoomInClicked() {
-		Game.camera.ZoomIn();
+	public void AddCommand(string command) {
+		commands.Add(command);
 	}
 	
-	public void ButtonZoomOutClicked() {
-		Game.camera.ZoomOut();
+	public List<string> GetCommands() {
+		return commands;
 	}
+	
 }
