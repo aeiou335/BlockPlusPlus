@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour {
     public GameObject fadeInPanel;
     public GameObject youWonPanel;
     public Text level;
-    public Text score;
+    //public Text score;
     public bool paused;
     public static int currentLevel;
 
@@ -56,10 +56,15 @@ public class GameManager : MonoBehaviour {
     {
         if (!gameOver)
         {
-            score.text = "500";
+            //score.text = "500";
             gameOver = true;
             youWonPanel.SetActive(true);
             FindObjectOfType<PlayerMovement>().enabled = false; // stop movement of player
+            //Setting Int for Index
+            if (currentLevel+1 > PlayerPrefs.GetInt("levelAt"))
+            {
+                PlayerPrefs.SetInt("levelAt", currentLevel+1);
+            }
             Invoke("NextLevel", restartLevelDelay);
         }
     }

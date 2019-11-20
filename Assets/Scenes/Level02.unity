@@ -663,7 +663,6 @@ MonoBehaviour:
   fadeInPanel: {fileID: 1689604098}
   youWonPanel: {fileID: 1729286238}
   level: {fileID: 1425699324}
-  score: {fileID: 1100451103}
   paused: 0
 --- !u!4 &127647681
 Transform:
@@ -6361,6 +6360,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 0}
+  gameManager: {fileID: 127647680}
 --- !u!114 &1419589670
 MonoBehaviour:
   m_ObjectHideFlags: 0
