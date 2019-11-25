@@ -6,18 +6,38 @@ using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour {
 
-    public Text controlsText;
+    public int currentChapter;
 
-	void Start () {
-        if (Application.platform == RuntimePlatform.Android)
-        {
-            controlsText.text = "Controls:\nMove Left: Touch left side of screen\nMove Right: Touch right side of screen\nJump: Swipe up";
-        }
+	void Start () 
+    {
+       
     }
 
     public void PlayButtonClicked()
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("ChapterSelection");
     }
 
+    public void ChapterButtonClicked(int chapter)
+    {   
+        Debug.Log(chapter);
+        PlayerPrefs.SetInt("currentChapter", chapter);
+        SceneManager.LoadScene("Chapter" + chapter);
+    }
+
+    public void LevelButtonClicked(int level)
+    {
+        currentChapter = PlayerPrefs.GetInt("currentChapter");
+        SceneManager.LoadScene("Level" + currentChapter + "_" + level);
+    }
+
+    public void BackToMenuButtonClicked()
+    {
+        Debug.Log("aaa");
+        SceneManager.LoadScene("Menu");
+    }
+    public void BackToChapterSelcetion()
+    {
+        SceneManager.LoadScene("ChapterSelection");
+    }
 }

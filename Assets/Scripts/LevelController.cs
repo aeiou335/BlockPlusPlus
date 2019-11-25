@@ -12,18 +12,29 @@ public class LevelController : MonoBehaviour {
     public GameObject fadeOutPanel;
     public GameObject fadeInPanel;
     public GameObject youWonPanel;
+    public GameObject youLosePanel;
+    public GameObject CompletePanel;
+    public GameObject LosePanel;
     public Text level;
 
     public Text diamondNumber;
 
     public bool paused;
     //public static int currentLevel;
-
+    public int maxLevel = 6;
+    public int currentLevel;
+    public string currentLevelPrefix;
     public void Start()
     {
 		Game.level = this;
         fadeInPanel.SetActive(true);
-        level.text = "Level " + SceneManager.GetActiveScene().buildIndex;
+        CompletePanel.GetComponent<Canvas>().enabled = false;
+        LosePanel.GetComponent<Canvas>().enabled = false;
+        string[] levelName = SceneManager.GetActiveScene().name.Split('_');
+        currentLevelPrefix = levelName[0];
+        currentLevel = int.Parse(levelName[1]);
+        //Debug.Log(currentLevel.Length);
+        level.text = "Level " + currentLevel;
         //currentLevel = SceneManager.GetActiveScene().buildIndex;
     }
 
@@ -50,45 +61,37 @@ public class LevelController : MonoBehaviour {
         if (Input.GetKeyDown("w")) {
             CompleteLevel();
         }
-
+        if (Input.GetKeyDown("l"))
+        {
+            FailLevel();
+        }
     }
 
 
     public void CompleteLevel()
-    {
-        if (!gameOver)
+    {      
+        CompletePanel.GetComponent<Canvas>().enabled = true;
+        /*
+        if (Game.levelNumber+1 > PlayerPrefs.GetInt("levelAt"))
         {
-            //score.text = "500";
-            gameOver = true;
-            youWonPanel.SetActive(true);
-            //FindObjectOfType<PlayerMovement>().enabled = false; // stop movement of player
-            //Setting Int for Index
-            if (Game.levelNumber+1 > PlayerPrefs.GetInt("levelAt"))
-            {
-                PlayerPrefs.SetInt("levelAt", Game.levelNumber+1);
-            }
-
-            Invoke("NextLevel", restartLevelDelay);
+            PlayerPrefs.SetInt("levelAt", Game.levelNumber+1);
         }
+        */   
     }
 
-    public void EndGame()
-    {
-        if (!gameOver)
-        {
-            gameOver = true;
-            //FindObjectOfType<PlayerMovement>().enabled = false; // stop movement of player
-            FindObjectOfType<Camera>().backgroundColor = gameOverColor; // turn background to red
-            RenderSettings.fogColor = gameOverColor; // turn fog to red
-            Invoke("Restart", restartLevelDelay);
-        }
-        
+    public void FailLevel()
+    {     
+        LosePanel.GetComponent<Canvas>().enabled = true;
     }
 
     public void Restart()
     {
-        fadeOutPanel.SetActive(true);
-        Invoke("ReloadScreen", 1);
+        //fadeOutPanel.SetActive(true);
+        Game.blocky.Reset();
+		Game.camera.Reset();
+        CompletePanel.GetComponent<Canvas>().enabled = false;
+        LosePanel.GetComponent<Canvas>().enabled = false;
+        //Invoke("ReloadScreen", 1);
     }
 
     private void ReloadScreen()
@@ -98,17 +101,17 @@ public class LevelController : MonoBehaviour {
 
     public void NextLevel()
     {
-        fadeOutPanel.SetActive(true);
-        Invoke("LoadNextScreen", 1);
-        
-        if (SceneManager.GetActiveScene().name == "Level04") {
+        if (currentLevel == maxLevel) {
             Invoke("LoadEndScreen", 1);
         }
         else {
             Invoke("LoadNextScreen", 1);
-        }
-        
-        
+        }        
+    }
+
+    public void BackToMenu()
+    {
+        SceneManager.LoadScene("Menu");
     }
     private void LoadEndScreen()
     {
@@ -117,8 +120,9 @@ public class LevelController : MonoBehaviour {
     
     private void LoadNextScreen()
     {
-        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
-        SceneManager.LoadScene("NextLevel");
+        int nextLevelNum = currentLevel + 1; 
+        Debug.Log(currentLevelPrefix + '_' + nextLevelNum);
+        SceneManager.LoadScene(currentLevelPrefix + '_' + nextLevelNum);
     }
     
     
