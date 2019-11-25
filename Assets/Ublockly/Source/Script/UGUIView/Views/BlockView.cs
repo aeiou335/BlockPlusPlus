@@ -323,6 +323,8 @@ namespace UBlockly.UGUI
             if (mClosestConnection != null)
             {
                 // attach to closest connection
+                Debug.Log("Block Connected");
+                Game.sound.play("CONNECT");
                 mClosestConnection.Connect(mAttachingConnection);
                 mClosestConnection.FireUpdate(Connection.UpdateState.UnHighlight);
             }

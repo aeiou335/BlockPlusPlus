@@ -159,7 +159,11 @@ namespace UBlockly.UGUI
         public override void FinishCheckBin(BlockView blockView)
         {
             if (CheckBin(blockView))
+            {
                 blockView.Dispose();
+                Debug.Log("Block Deleted");
+                Game.sound.play("DELETE");
+            }
             m_BinArea.gameObject.SetActive(false);
         }
     }

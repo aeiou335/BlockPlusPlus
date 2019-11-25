@@ -15,6 +15,12 @@ public class MenuController : MonoBehaviour {
 
     public void PlayButtonClicked()
     {
+        Game.sound.play("PLAY");
+		Invoke("_PlayButtonClicked", 1);
+    }
+
+    void _PlayButtonClicked()
+    {
         SceneManager.LoadScene("ChapterSelection");
     }
 

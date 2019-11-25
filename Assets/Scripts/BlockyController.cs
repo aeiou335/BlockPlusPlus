@@ -137,6 +137,7 @@ public class BlockyController : MonoBehaviour {
 			case "XN": rb.velocity = new Vector3(-2f, 2.4f, 0f); break;
 			case "ZN": rb.velocity = new Vector3(0f, 2.4f, -2f); break;
 		}
+		Game.sound.play("JUMP");
 	}
 	
 	// Move Backward 1 block
@@ -149,6 +150,7 @@ public class BlockyController : MonoBehaviour {
 			case "XN": rb.velocity = new Vector3(2f, 2.4f, 0f); break;
 			case "ZN": rb.velocity = new Vector3(0f, 2.4f, 2f); break;
 		}
+		Game.sound.play("JUMP");
 	}
 	
 	// Turn left 90 degrees
@@ -163,6 +165,7 @@ public class BlockyController : MonoBehaviour {
 			case "XN": direction = "ZN"; turnTarget =  90; break;
 			case "ZN": direction = "XP"; turnTarget = 360; break;
 		}
+		Game.sound.play("JUMP");
 	}
 	
 	// Turn right 90 degrees
@@ -177,6 +180,7 @@ public class BlockyController : MonoBehaviour {
 			case "XN": direction = "ZP"; turnTarget = 270; break;
 			case "ZN": direction = "XN"; turnTarget = 180; break;
 		}
+		Game.sound.play("JUMP");
 	}
 	
 	// Correct position and rotation
@@ -223,6 +227,7 @@ public class BlockyController : MonoBehaviour {
 				countDown = 50;
 				state = "FINISH";
 				Debug.Log("FINISH");
+				Game.sound.play("WIN");
 				break;
 			case "Diamond":
 				diamondNumber += 1;

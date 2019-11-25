@@ -9,6 +9,7 @@ public class Game
 	public static CameraController camera;
 	public static WorkspaceController workspace;
 	public static LevelController level;
+	public static SoundController sound;
 	public static int levelNumber = 1;
 	
 	/*
