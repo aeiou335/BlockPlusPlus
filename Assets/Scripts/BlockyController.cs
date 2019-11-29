@@ -5,180 +5,239 @@ using UnityEngine.SceneManagement;
 
 public class BlockyController : MonoBehaviour {
 	
-	public enum State { STOP, COOL, FRONT, BACK, LEFT, RIGHT, DEAD, FINISH };
-	public enum Direction { XP, ZP, XN, ZN };
 	public Rigidbody rb;
-	public GameManager gameManager;
+	public string state; // { STOP, COOL, FRONT, BACK, LEFT, RIGHT, DEAD, FINISH, RESET, MENU }
+	public string direction; // { XP, ZP, XN, ZN }
 	
-	float timerDelay = 0.025f;
+	readonly float timerDelay = 0.025f;
+	
+	Vector3 resetPosition, resetAngle;
+	string resetDirection;
+	int countDown;
 	int breathValue;
 	int turnTarget;
-	int countDown;
-	Vector3 rotateAxis;
-	State state;
-	Direction direction;
-	Vector3 targetPos;
-	Vector3 targetAngle;
+	Vector3 turnAxis;
+	bool commandRunning;
+	int commandIndex;
+	int diamondNumber;
 	
 	void Awake() { 
 		Game.blocky = this;
-	} 
+	}
 	
 	void Start() {
-		
 		rb = GetComponent<Rigidbody>();
 		InvokeRepeating("TimerTick", timerDelay, timerDelay);
-		
+		var pos = transform.position;
+		var angle = transform.eulerAngles;
+		resetPosition = new Vector3(pos.x, pos.y, pos.z);
+		resetAngle = new Vector3(angle.x, angle.y, angle.z);
+		if (Mathf.Abs(Mathf.DeltaAngle(angle.y,   0)) < 45) resetDirection = "XP";
+		if (Mathf.Abs(Mathf.DeltaAngle(angle.y,  90)) < 45) resetDirection = "ZN";
+		if (Mathf.Abs(Mathf.DeltaAngle(angle.y, 180)) < 45) resetDirection = "XN";
+		if (Mathf.Abs(Mathf.DeltaAngle(angle.y, 270)) < 45) resetDirection = "ZP";
+		if (SceneManager.GetActiveScene().name == "Menu") {
+			breathValue = 1;
+			state = "MENU";
+		} else {
+			Reset();
+			Game.camera.Reset();
+		}
+	}
+	
+	public void Reset() {
+		transform.position = resetPosition;
+		transform.eulerAngles = resetAngle;
+		direction = resetDirection;
+		rb.velocity = Vector3.zero;
 		breathValue = 1;
-		state = State.STOP;
-		direction = Direction.XP;
+		commandRunning = false;
+		countDown = 50;
+		state = "RESET";
+		diamondNumber = 0;
 	}
 	
 	void Update() {
-		if (state == State.STOP) {
-			if (Input.GetKeyDown("up"))
-				MoveForward();
-			if (Input.GetKeyDown("down"))
-				MoveBackward();
-			if (Input.GetKeyDown("left"))
-				TurnLeft();
-			if (Input.GetKeyDown("right"))
-				TurnRight();
-		}
+		if (isFrozen()) return;
 		if (transform.position.y < -10) {
-			Game.ReloadLevel();
+			state = "DEAD";
 		}
 	}
 	
 	// Called every timer ticks
 	void TimerTick() {
 		{ // Breath
-			if (transform.localScale.x > 0.5+0.01) breathValue = -1;
-			if (transform.localScale.x < 0.5-0.01) breathValue = +1;
+			if (transform.localScale.x > 0.5+0.015) breathValue = -1;
+			if (transform.localScale.x < 0.5-0.015) breathValue = +1;
 			float delta = timerDelay*0.1f;
 			Vector3 deltaVector = new Vector3(delta, -delta, delta);
 			transform.localScale += deltaVector*breathValue;
 		}
 		switch (state) {
-			case State.FINISH:
-				{ // Count down
-					countDown -= 1;
-					if (countDown < 0) gameManager.CompleteLevel();//Game.NextLevel();
-				}
+			case "RESET":
+				if (--countDown < 0) state = "STOP";
 				break;
-			case State.DEAD:
-				{ // Count down
-					countDown -= 1;
-					if (countDown < 0) Game.ReloadLevel();
-				}
+			case "FINISH":
+				if (--countDown < 0) { state = "END"; Game.level.CompleteLevel(); }
 				break;
-			case State.STOP:
-			case State.COOL:
-				{ // Correct position and rotation
-					Vector3 pos = transform.position;
-					Vector3 eul = transform.eulerAngles;
-					float dx = (pos.x < 0? -0.5f: +0.5f);
-					float dz = (pos.z < 0? -0.5f: +0.5f);
-					targetPos = new Vector3((int)pos.x+dx, pos.y, (int)pos.z+dz);
-					transform.position += (targetPos-transform.position)*0.1f;
-					int[] angles = { 90, 180, 270, 360 };
-					foreach (int angle in angles)
-						if (Mathf.Abs(Mathf.DeltaAngle(eul.y, angle)) < 45)
-							transform.eulerAngles = new Vector3(0, angle, 0);
-				}
-				{ // Count down
-					countDown -= 1;
-					if (countDown < 0) state = State.STOP;
-				}
+			case "DEAD":
+				if (--countDown < 0) { state = "END"; Game.level.FailLevel(); }
 				break;
-			case State.FRONT:
-			case State.BACK:
+			case "STOP":
+				Correction();
+				if (commandRunning) NextCommand();
+				break;
+			case "COOL":
+				Correction();
+				if (--countDown < 0) state = "STOP";
+				break;
+			case "FRONT":
+			case "BACK":
 				if (rb.velocity.magnitude < 0.01) {
 					countDown = 5;
-					state = State.COOL;
+					state = "COOL";
 				}
 				break;
-			case State.LEFT:
-			case State.RIGHT:
-				transform.RotateAround(transform.position, rotateAxis, timerDelay*200);
+			case "LEFT":
+			case "RIGHT":
+				transform.RotateAround(transform.position, turnAxis, timerDelay*200);
 				if (Mathf.Abs(Mathf.DeltaAngle(transform.eulerAngles.y, turnTarget)) < 2) {
 					countDown = 5;
-					state = State.COOL;
+					state = "COOL";
 				}
 				break;
+			default:
+				break;
 		}
+	}
+	
+	// is frozen?
+	public bool isFrozen() {
+		return (state == "RESET" || state == "MENU");
+	}
+	
+	// is ended?
+	public bool isEnded() {
+		return (state == "END" || state == "DEAD" || state == "FINISH");
+	}
+	
+	// Start running command
+	public void CommandStart() {
+		commandIndex = 0;
+		commandRunning = true;
 	}
 	
 	// Move forward 1 block
-	public void MoveForward() {
-		if (state != State.STOP) return;
-		state = State.FRONT;
+	void MoveForward() {
+		if (state != "STOP") return;
+		state = "FRONT";
 		switch (direction) {
-			case Direction.XP: rb.velocity = new Vector3(2f, 2.4f, 0f); break;
-			case Direction.ZP: rb.velocity = new Vector3(0f, 2.4f, 2f); break;
-			case Direction.XN: rb.velocity = new Vector3(-2f, 2.4f, 0f); break;
-			case Direction.ZN: rb.velocity = new Vector3(0f, 2.4f, -2f); break;
+			case "XP": rb.velocity = new Vector3(2f, 2.4f, 0f); break;
+			case "ZP": rb.velocity = new Vector3(0f, 2.4f, 2f); break;
+			case "XN": rb.velocity = new Vector3(-2f, 2.4f, 0f); break;
+			case "ZN": rb.velocity = new Vector3(0f, 2.4f, -2f); break;
 		}
+		Game.sound.play("JUMP");
 	}
 	
 	// Move Backward 1 block
-	public void MoveBackward() {
-		if (state != State.STOP) return;
-		state = State.BACK;
+	void MoveBackward() {
+		if (state != "STOP") return;
+		state = "BACK";
 		switch (direction) {
-			case Direction.XP: rb.velocity = new Vector3(-2f, 2.4f, 0f); break;
-			case Direction.ZP: rb.velocity = new Vector3(0f, 2.4f, -2f); break;
-			case Direction.XN: rb.velocity = new Vector3(2f, 2.4f, 0f); break;
-			case Direction.ZN: rb.velocity = new Vector3(0f, 2.4f, 2f); break;
+			case "XP": rb.velocity = new Vector3(-2f, 2.4f, 0f); break;
+			case "ZP": rb.velocity = new Vector3(0f, 2.4f, -2f); break;
+			case "XN": rb.velocity = new Vector3(2f, 2.4f, 0f); break;
+			case "ZN": rb.velocity = new Vector3(0f, 2.4f, 2f); break;
 		}
+		Game.sound.play("JUMP");
 	}
 	
 	// Turn left 90 degrees
-	public void TurnLeft() {
-		if (state != State.STOP) return;
-		state = State.LEFT;
-		rotateAxis = Vector3.down;
+	void TurnLeft() {
+		if (state != "STOP") return;
+		state = "LEFT";
+		turnAxis = Vector3.down;
 		rb.velocity = new Vector3(0f, 2.6f, 0f);
 		switch (direction) {
-			case Direction.XP: direction = Direction.ZP; turnTarget = 270; break;
-			case Direction.ZP: direction = Direction.XN; turnTarget = 180; break;
-			case Direction.XN: direction = Direction.ZN; turnTarget =  90; break;
-			case Direction.ZN: direction = Direction.XP; turnTarget = 360; break;
+			case "XP": direction = "ZP"; turnTarget = 270; break;
+			case "ZP": direction = "XN"; turnTarget = 180; break;
+			case "XN": direction = "ZN"; turnTarget =  90; break;
+			case "ZN": direction = "XP"; turnTarget = 360; break;
 		}
+		Game.sound.play("JUMP");
 	}
 	
 	// Turn right 90 degrees
-	public void TurnRight() {
-		if (state != State.STOP) return;
-		state = State.RIGHT;
-		rotateAxis = Vector3.up;
+	void TurnRight() {
+		if (state != "STOP") return;
+		state = "RIGHT";
+		turnAxis = Vector3.up;
 		rb.velocity = new Vector3(0f, 2.6f, 0f);
 		switch (direction) {
-			case Direction.XP: direction = Direction.ZN; turnTarget =  90; break;
-			case Direction.ZP: direction = Direction.XP; turnTarget = 360; break;
-			case Direction.XN: direction = Direction.ZP; turnTarget = 270; break;
-			case Direction.ZN: direction = Direction.XN; turnTarget = 180; break;
+			case "XP": direction = "ZN"; turnTarget =  90; break;
+			case "ZP": direction = "XP"; turnTarget = 360; break;
+			case "XN": direction = "ZP"; turnTarget = 270; break;
+			case "ZN": direction = "XN"; turnTarget = 180; break;
 		}
+		Game.sound.play("JUMP");
+	}
+	
+	// Correct position and rotation
+	void Correction() { 
+		Vector3 pos = transform.position;
+		Vector3 eul = transform.eulerAngles;
+		float dx = (pos.x < 0? -0.5f: +0.5f);
+		float dz = (pos.z < 0? -0.5f: +0.5f);
+		var targetPos = new Vector3((int)pos.x+dx, pos.y, (int)pos.z+dz);
+		transform.position += (targetPos-transform.position)*0.1f;
+		int[] angles = { 90, 180, 270, 360 };
+		foreach (int angle in angles)
+			if (Mathf.Abs(Mathf.DeltaAngle(eul.y, angle)) < 45)
+				transform.eulerAngles = new Vector3(0, angle, 0);
+	}
+	
+	// Do next command
+	void NextCommand() {
+		var commands = Game.workspace.GetCommands();
+		if (commandIndex >= commands.Count) {
+			commandRunning = false;
+			countDown = 50;
+			state = "DEAD";
+			return;
+		}
+		switch (commands[commandIndex]) {
+			case "blocky_move_forward": MoveForward(); break;
+			case "blocky_move_backward": MoveBackward(); break;
+			case "blocky_turn_left": TurnLeft(); break;
+			case "blocky_turn_right": TurnRight(); break;
+			default: break;
+		}
+		commandIndex += 1;
 	}
 
+	// On Collision
 	void OnCollisionEnter(Collision collisionInfo) {
-		Debug.Log("tag = "+collisionInfo.collider.tag);
+		if (isFrozen() || isEnded()) return;
+		//Debug.Log("tag = "+collisionInfo.collider.tag);
 		switch (collisionInfo.collider.tag) {
 			case "Ground":
 				break;
 			case "Flag":
-				if (state != State.DEAD) {
-					countDown = 50;
-					state = State.FINISH;
-					Debug.Log("FINISH");
-				}
+				countDown = 50;
+				state = "FINISH";
+				Debug.Log("FINISH");
+				Game.sound.play("WIN");
+				break;
+			case "Diamond":
+				diamondNumber += 1;
+				Game.level.diamondNumber.text = "Diamond: "+diamondNumber;
+				Debug.Log("Diamond Touched");
 				break;
 			default:
-				if (state != State.FINISH) {
-					countDown = 50;
-					state = State.DEAD;
-					Debug.Log("DEAD");
-				}
+				countDown = 50;
+				state = "DEAD";
+				Debug.Log("DEAD");
 				break;
 		}
 	}

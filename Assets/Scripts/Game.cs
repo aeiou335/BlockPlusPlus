@@ -7,24 +7,21 @@ public class Game
 {
 	public static BlockyController blocky;
 	public static CameraController camera;
+	public static WorkspaceController workspace;
+	public static LevelController level;
+	public static SoundController sound;
 	public static int levelNumber = 1;
-	public GameManager gameManager;
+	
+	/*
 	
 	public static void ReloadLevel() {
-		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-		Debug.Log("ReloadLevel");
+		level.EndGame();
 	}
-	/*
+	
 	public static void NextLevel() {
-		
-		levelNumber++;
-		if (levelNumber > 2) levelNumber = 1;
-		SceneManager.LoadScene("Level0"+levelNumber);
-		Debug.Log("NextLevel "+levelNumber);
-		
-		gameManager.CompleteLevel();
-		
+		Debug.Log("Game.NextLevel()");
+		levelNumber += 1;
+		level.CompleteLevel();
 	}
 	*/
-	
 }
