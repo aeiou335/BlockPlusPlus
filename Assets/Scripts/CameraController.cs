@@ -4,13 +4,15 @@ using UnityEngine.EventSystems;
 
 public class CameraController : MonoBehaviour {
 	
-	readonly Vector3 resetPosition = new Vector3(-10f, 10f, -10f);
-	readonly Vector3 resetTargetPosition = new Vector3(3.5f, 2.0f, 1.0f);
+	//readonly Vector3 positionReset = new Vector3(-10f, 10f, -10f);
+	//readonly Vector3 targetPositionReset = new Vector3(3.5f, 2.0f, 1.0f);
+	readonly Vector3 positionReset = new Vector3(-15f, 15f, -15f);
+	readonly Vector3 targetPositionReset = new Vector3(5f, 5f, 2f);
 	readonly float speed = 3f;
 	
 	Vector3 targetPosition;
 	Vector3 lookPosition;
-	Vector3 lookPositionLast;
+	//Vector3 lookPositionLast;
 	float lastDistance;
 	
 	void Awake() { 
@@ -18,10 +20,25 @@ public class CameraController : MonoBehaviour {
 	} 
 	
 	void Start() {
+		Reset();
 	}
 	
 	public void Reset() {
 		lastDistance = -1;
+		transform.position = positionReset + lookPosition;
+		targetPosition = targetPositionReset + lookPosition;
+		{ // find center of world
+			var grounds = GameObject.FindGameObjectsWithTag("Ground");
+			lookPosition = new Vector3(0, 0, 0);
+			foreach (var ground in grounds)
+			{
+				lookPosition += ground.transform.position;
+				Debug.Log(ground.transform.position);
+			}
+			lookPosition /= grounds.Length;
+			Debug.Log(lookPosition);
+		}
+		/*
 		lookPosition = Game.blocky.transform.position;
 		lookPositionLast = lookPosition;
 		var angle = 0.0f;
@@ -32,18 +49,23 @@ public class CameraController : MonoBehaviour {
 			case "ZP": angle = Mathf.PI*1.5f; break;
 		}
 		//Debug.Log(angle);
-		transform.position = RotateY(resetPosition, angle) + lookPosition;
-		targetPosition = RotateY(resetTargetPosition, angle) + lookPosition;
+		transform.position = RotateY(positionReset, angle) + lookPosition;
+		targetPosition = RotateY(targetPositionReset, angle) + lookPosition;
+		*/
 	}
 	
 	void Update() {
 		
 		{ // keep following target's position
+			transform.LookAt(lookPosition);
+			transform.position += (targetPosition-transform.position)*0.1f;
+			/*
 			lookPosition = Game.blocky.transform.position;
 			transform.LookAt(lookPosition);
 			targetPosition += (lookPosition-lookPositionLast);
 			lookPositionLast = lookPosition;
 			transform.position += (targetPosition-transform.position)*0.1f;
+			*/
 		}
 		
 		if (Game.workspace.canvas.enabled) return;
