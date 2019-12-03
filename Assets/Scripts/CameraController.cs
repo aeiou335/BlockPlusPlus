@@ -33,10 +33,10 @@ public class CameraController : MonoBehaviour {
 			foreach (var ground in grounds)
 			{
 				lookPosition += ground.transform.position;
-				Debug.Log(ground.transform.position);
+				//Debug.Log(ground.transform.position);
 			}
 			lookPosition /= grounds.Length;
-			Debug.Log(lookPosition);
+			//Debug.Log(lookPosition);
 		}
 		/*
 		lookPosition = Game.blocky.transform.position;
