@@ -69,4 +69,26 @@ namespace UBlockly
             //UnityEngine.Debug.Log("blocky_turn_right");
         }
     }
+	
+    [CodeInterpreter(BlockType = "blocky_jump_forward")]
+    public class Blocky_Jump_Forward_Cmdtor : EnumeratorCmdtor
+    {
+        protected override IEnumerator Execute(Block block)
+        {
+			yield return null;
+			Game.workspace.AddCommand("blocky_jump_forward");
+            //UnityEngine.Debug.Log("blocky_jump_forward");
+        }
+    }
+	
+    [CodeInterpreter(BlockType = "blocky_jump_backward")]
+    public class Blocky_Jump_Backward_Cmdtor : EnumeratorCmdtor
+    {
+        protected override IEnumerator Execute(Block block)
+        {
+			yield return null;
+			Game.workspace.AddCommand("blocky_jump_backward");
+            //UnityEngine.Debug.Log("blocky_jump_backward");
+        }
+    }
 }

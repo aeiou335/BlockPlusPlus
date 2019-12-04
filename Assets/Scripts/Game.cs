@@ -11,17 +11,4 @@ public class Game
 	public static LevelController level;
 	public static SoundController sound;
 	public static int levelNumber = 1;
-	
-	/*
-	
-	public static void ReloadLevel() {
-		level.EndGame();
-	}
-	
-	public static void NextLevel() {
-		Debug.Log("Game.NextLevel()");
-		levelNumber += 1;
-		level.CompleteLevel();
-	}
-	*/
 }

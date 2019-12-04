@@ -19,7 +19,6 @@ public class BlockyController : MonoBehaviour
 	Vector3 turnAxis;
 	bool commandRunning;
 	int commandIndex;
-	int diamondNumber;
 	float startHeight;
 	string standOn;
 	
@@ -30,7 +29,6 @@ public class BlockyController : MonoBehaviour
 	
 	void Start() 
 	{
-		rb = GetComponent<Rigidbody>();
 		InvokeRepeating("TimerTick", timerDelay, timerDelay);
 		var pos = transform.position;
 		var angle = transform.eulerAngles;
@@ -39,24 +37,24 @@ public class BlockyController : MonoBehaviour
 		foreach (var d in directions)
 			if (Mathf.Abs(Mathf.DeltaAngle(angle.y, d)) < 45)
 				resetDirection = d;
-		if (SceneManager.GetActiveScene().name == "Menu") {
-			breathValue = 1;
-			SetState("MENU", 0);
-		} else {
-			Game.blocky.Reset();
-			Game.camera.Reset();
-		}
+		Reset();
 	}
 	
 	public void Reset() 
 	{
+		if (SceneManager.GetActiveScene().name == "Menu") 
+		{
+			breathValue = 1;
+			SetState("MENU", 0);
+			return;
+		}
+		rb = GetComponent<Rigidbody>();
 		transform.position = resetPosition;
 		transform.eulerAngles = resetAngle;
 		direction = resetDirection;
 		rb.velocity = Vector3.zero;
 		breathValue = 1;
 		commandRunning = false;
-		diamondNumber = 0;
 		SetState("RESET", countDown);
 	}
 	
@@ -69,19 +67,14 @@ public class BlockyController : MonoBehaviour
 	// Called every timer ticks
 	void TimerTick() 
 	{
-		{ // Breath
-			if (transform.localScale.x > 0.5+0.015) breathValue = -1;
-			if (transform.localScale.x < 0.5-0.015) breathValue = +1;
-			float delta = timerDelay*0.1f;
-			Vector3 deltaVector = new Vector3(delta, -delta, delta);
-			transform.localScale += deltaVector*breathValue;
-		}
+		Breath();
+		CheckCollision();
 		switch (state) 
 		{
 			case "RESET":
 				if (--countDown < 0) SetState("STOP", 0);
 				break;
-			case "FINISH":
+			case "WIN":
 				if (--countDown < 0) { SetState("END", 0); Game.level.CompleteLevel(); }
 				break;
 			case "DEAD":
@@ -119,7 +112,7 @@ public class BlockyController : MonoBehaviour
 	// is ended?
 	public bool isEnded() 
 	{
-		return (state == "END" || state == "DEAD" || state == "FINISH");
+		return (state == "END" || state == "DEAD" || state == "WIN");
 	}
 	
 	// Start running command
@@ -137,12 +130,13 @@ public class BlockyController : MonoBehaviour
 		countDown = _countDown;
 	}
 	
-	// Move forward/backward 1 block
-	void Move(string dir) 
+	// Move/Jump forward/backward 1 block
+	void Move(string dir, string mode) 
 	{
 		if (state != "STOP") return;
 		var sign = (dir == "FORWARD"? 1: -1);
-		var vx = 1.2f; var vy = 4f;
+		var vx = (mode == "JUMP"? 1.5f: 2.0f); 
+		var vy = (mode == "JUMP"? 4.0f: 2.4f);
 		switch (direction) 
 		{
 			case   0: rb.velocity = new Vector3(vx*sign, vy, 0f); break;
@@ -166,6 +160,16 @@ public class BlockyController : MonoBehaviour
 		Game.sound.play("JUMP");
 	}
 	
+	// Breath animation
+	void Breath()
+	{
+		if (transform.localScale.x > 0.5+0.015) breathValue = -1;
+		if (transform.localScale.x < 0.5-0.015) breathValue = +1;
+		float delta = timerDelay*0.1f;
+		Vector3 deltaVector = new Vector3(delta, -delta, delta);
+		transform.localScale += deltaVector*breathValue;
+	}
+	
 	// Correct position and rotation value
 	void Correction() 
 	{ 
@@ -175,18 +179,24 @@ public class BlockyController : MonoBehaviour
 		float dz = (pos.z < 0? -0.5f: +0.5f);
 		var targetPos = new Vector3((int)pos.x+dx, pos.y, (int)pos.z+dz);
 		transform.position += (targetPos-transform.position)*0.1f;
-		//transform.position = new Vector3((int)pos.x+dx, pos.y, (int)pos.z+dz);
 		var angleY = 0f; 
 		foreach (int angle in directions)
 			if (Mathf.Abs(Mathf.DeltaAngle(eul.y, angle)) < 45) angleY = angle;
-		/*var angleZ = 0f;
-		if (standOn == "SLOPE") {
-			if (Mathf.Abs(Mathf.DeltaAngle(eul.z, 45)) < 45) angleZ = 45;
-			if (Mathf.Abs(Mathf.DeltaAngle(eul.z, 315)) < 45) angleZ = 315;
-		}*/
 		transform.eulerAngles = new Vector3(eul.x, angleY, eul.z);
 		rb.velocity = new Vector3(0f, 0f, 0f);
 		rb.angularVelocity = new Vector3(0f, 0f, 0f);
+	}
+	
+	// Check Collision for coin,diamond,star
+	void CheckCollision()
+	{
+		foreach (var coin in Game.level.coins)
+			if ((coin.transform.position - transform.position).magnitude < 0.5 && 
+				coin.transform.localScale.magnitude > 1)
+			{
+				Game.level.Score("COIN");
+				coin.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
+			}
 	}
 	
 	// Do the next command
@@ -201,47 +211,47 @@ public class BlockyController : MonoBehaviour
 		}
 		switch (commands[commandIndex]) 
 		{
-			case "blocky_move_forward": Move("FORWARD"); break;
-			case "blocky_move_backward": Move("BACKWARD"); break;
-			case "blocky_turn_left": Turn("LEFT"); break;
-			case "blocky_turn_right": Turn("RIGHT"); break;
+			case "blocky_move_forward":  Move("FORWARD", "MOVE"); break;
+			case "blocky_move_backward": Move("BACKWARD", "MOVE"); break;
+			case "blocky_turn_left":     Turn("LEFT"); break;
+			case "blocky_turn_right":    Turn("RIGHT"); break;
+			case "blocky_jump_forward":  Move("FORWARD", "JUMP"); break;
+			case "blocky_jump_backward": Move("BACKWARD", "JUMP"); break;
 			default: break;
 		}
 		commandIndex += 1;
 	}
 
 	// On Collision
-	void OnCollisionEnter(Collision collisionInfo) 
+	void OnCollisionEnter(Collision collision) 
 	{
 		if (isFrozen() || isEnded()) return;
-		Debug.Log("OnCollisionEnter = "+collisionInfo.collider.tag);
-		switch (collisionInfo.collider.tag) 
+		Debug.Log("Collision = " + collision.collider.tag);
+		switch (collision.collider.tag) 
 		{
 			case "Ground":
 				standOn = "GROUND";
-				if (state == "MOVE") SetState("COOL", 10);
-				if (state == "TURN") SetState("COOL", 10);
+				if (state == "MOVE" || state == "TURN") SetState("COOL", 10);
 				break;
 			case "Stair":
 				standOn = "STAIR";
-				if (state == "MOVE") SetState("COOL", 10);
-				if (state == "TURN") SetState("COOL", 10);
+				if (state == "MOVE" || state == "TURN") SetState("COOL", 10);
 				break;
 			case "Flag":
-				SetState("FINISH", 50);
+				SetState("WIN", 50);
 				Game.sound.play("WIN");
 				break;
-			/*
-			case "Diamond":
-				diamondNumber += 1;
-				Game.level.diamondNumber.text = "Diamond: "+diamondNumber;
-				Debug.Log("Diamond Touched");
-				break;
-			*/
 			default:
 				SetState("DEAD", 50);
 				break;
 		}
 	}
 	
+	/*
+	void OnTriggerEnter(Collision collision) 
+	{
+		Debug.Log("Trigger = " + collision.collider.tag);
+		OnCollisionEnter(collision);
+	}
+	*/
 }

@@ -16,14 +16,17 @@ public class LevelController : MonoBehaviour {
     public GameObject CompletePanel;
     public GameObject LosePanel;
     public Text level;
-
-    public Text diamondNumber;
+    public Text scoreText;
 
     public bool paused;
     //public static int currentLevel;
     public int maxLevel = 6;
     public int currentLevel;
     public string currentLevelPrefix;
+	
+	public GameObject[] coins;
+	public int scoreCoin, scoreDiamond;
+	
     public void Start()
     {
 		Game.level = this;
@@ -36,6 +39,11 @@ public class LevelController : MonoBehaviour {
         //Debug.Log(currentLevel.Length);
         level.text = "Level " + currentLevel;
         //currentLevel = SceneManager.GetActiveScene().buildIndex;
+		
+		coins = GameObject.FindGameObjectsWithTag("Coin");
+		scoreCoin = 0; scoreDiamond = 0;
+		scoreText.text = "Coin:0 Diamond:0";
+		//Restart();
     }
 
     public void Update()
@@ -91,7 +99,10 @@ public class LevelController : MonoBehaviour {
 		Game.camera.Reset();
         CompletePanel.GetComponent<Canvas>().enabled = false;
         LosePanel.GetComponent<Canvas>().enabled = false;
-        //Invoke("ReloadScreen", 1);
+		scoreCoin = 0; scoreDiamond = 0;
+		scoreText.text = "Coin:0 Diamond:0";
+		foreach (var coin in coins)
+			coin.transform.localScale = new Vector3(1f, 1f, 1f);
     }
 
     private void ReloadScreen()
@@ -125,5 +136,11 @@ public class LevelController : MonoBehaviour {
         SceneManager.LoadScene(currentLevelPrefix + '_' + nextLevelNum);
     }
     
+    public void Score(string type)
+    {
+		if (type == "COIN") scoreCoin += 1;
+		if (type == "DIAMOND") scoreDiamond += 1;
+		scoreText.text = "Coin:" + scoreCoin + " Diamond:" + scoreDiamond;
+    }
     
 }
