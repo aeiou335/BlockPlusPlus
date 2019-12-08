@@ -39,24 +39,21 @@ public class CameraController : MonoBehaviour
 	
 	void Update() 
 	{
-		{ // keep following target's position
-			transform.LookAt(lookPosition);
-			transform.position += (targetPosition-transform.position)*0.1f;
-			/*
-			lookPosition = Game.blocky.transform.position;
-			transform.LookAt(lookPosition);
-			targetPosition += (lookPosition-lookPositionLast);
-			lookPositionLast = lookPosition;
-			transform.position += (targetPosition-transform.position)*0.1f;
-			*/
-		}
+		// keep following target's position
+		transform.LookAt(lookPosition);
+		transform.position += (targetPosition-transform.position)*0.1f;
 		
-		if (Game.workspace.canvas.enabled) return;
-		if (Game.blocky.isFrozen()) return;
+		try 
+		{
+			if (Game.workspace.canvas.enabled) return;
+			if (Game.blocky.isFrozen()) return;
+		}
+		catch (System.Exception e) { return; }
 		
 		// rotate camera angle when drag
-		if ((Input.touchCount == 0 && Input.GetMouseButton(0) && Input.mousePosition.y > 100) || 
-			(Input.touchCount == 1 && Input.GetTouch(0).position.y > 100)) 
+		if ((Input.touchCount == 0 && Input.GetMouseButton(0)) || (Input.touchCount == 1)) 
+		//if ((Input.touchCount == 0 && Input.GetMouseButton(0) && Input.mousePosition.y > 100) || 
+		//	(Input.touchCount == 1 && Input.GetTouch(0).position.y > 100)) 
 		{
 			float dx = Input.GetAxis("Mouse X") * 3f;
 			float dy = Input.GetAxis("Mouse Y") * 3f;
@@ -97,19 +94,10 @@ public class CameraController : MonoBehaviour
 			}
 		}
 		
-		// jkeyboard zoom
+		// keyboard zoom
 		if (Input.GetKeyDown(",")) ZoomIn();
 		if (Input.GetKeyDown(".")) ZoomOut();
 		
-	}
-	
-	// rotate a point around Y-axis by some angle
-	Vector3 RotateY(Vector3 point, float angle) 
-	{
-		float x = Mathf.Cos(angle)*point.x+Mathf.Sin(angle)*point.z;
-		float y = point.y;
-		float z = Mathf.Cos(angle)*point.z-Mathf.Sin(angle)*point.x;
-		return new Vector3(x, y, z);
 	}
 	
 	public void ZoomIn() 

@@ -68,7 +68,6 @@ public class BlockyController : MonoBehaviour
 	void TimerTick() 
 	{
 		Breath();
-		CheckCollision();
 		switch (state) 
 		{
 			case "RESET":
@@ -89,6 +88,7 @@ public class BlockyController : MonoBehaviour
 				if (--countDown < 0) SetState("STOP", 0);
 				break;
 			case "MOVE":
+				CheckCollision();
 				if (transform.position.y < startHeight) 
 					rb.velocity = new Vector3(0, rb.velocity.y, 0);
 				//if (rb.velocity.magnitude < 0.01 && rb.angularVelocity.magnitude < 0.01) 
