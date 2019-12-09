@@ -17,8 +17,7 @@ public class BlockyController : MonoBehaviour
 	int countDown;
 	int breathValue;
 	Vector3 turnAxis;
-	bool commandRunning;
-	int commandIndex;
+	bool isRunning;
 	float startHeight;
 	string standOn;
 	
@@ -54,7 +53,7 @@ public class BlockyController : MonoBehaviour
 		direction = resetDirection;
 		rb.velocity = Vector3.zero;
 		breathValue = 1;
-		commandRunning = false;
+		isRunning = false;
 		SetState("RESET", countDown);
 	}
 	
@@ -81,7 +80,7 @@ public class BlockyController : MonoBehaviour
 				break;
 			case "STOP":
 				Correction();
-				if (commandRunning) NextCommand();
+				if (isRunning) NextCommand();
 				break;
 			case "COOL":
 				Correction();
@@ -115,11 +114,11 @@ public class BlockyController : MonoBehaviour
 		return (state == "END" || state == "DEAD" || state == "WIN");
 	}
 	
-	// Start running command
-	public void CommandStart() 
+	// Start running commands
+	public void Run() 
 	{
-		commandIndex = 0;
-		commandRunning = true;
+		if (isFrozen() || isEnded()) return;
+		isRunning = true;
 	}
 	
 	// Set state
@@ -202,14 +201,8 @@ public class BlockyController : MonoBehaviour
 	// Do the next command
 	void NextCommand() 
 	{
-		var commands = Game.workspace.GetCommands();
-		if (commandIndex >= commands.Count) 
-		{
-			commandRunning = false;
-			SetState("DEAD", 50);
-			return;
-		}
-		switch (commands[commandIndex]) 
+		var command = Game.commands.Next();
+		switch (command) 
 		{
 			case "blocky_move_forward":  Move("FORWARD", "MOVE"); break;
 			case "blocky_move_backward": Move("BACKWARD", "MOVE"); break;
@@ -217,9 +210,13 @@ public class BlockyController : MonoBehaviour
 			case "blocky_turn_right":    Turn("RIGHT"); break;
 			case "blocky_jump_forward":  Move("FORWARD", "JUMP"); break;
 			case "blocky_jump_backward": Move("BACKWARD", "JUMP"); break;
+			case "<start>": break;
+			case "<stop>":
+				isRunning = false;
+				SetState("DEAD", 50);
+				break;
 			default: break;
 		}
-		commandIndex += 1;
 	}
 
 	// On Collision

@@ -32,7 +32,7 @@ namespace UBlockly
         protected override IEnumerator Execute(Block block)
         {
 			yield return null;
-			Game.workspace.AddCommand("blocky_move_forward");
+			Game.commands.Add("blocky_move_forward");
             //UnityEngine.Debug.Log("blocky_move_forward");
         }
     }
@@ -43,7 +43,7 @@ namespace UBlockly
         protected override IEnumerator Execute(Block block)
         {
 			yield return null;
-			Game.workspace.AddCommand("blocky_move_backward");
+			Game.commands.Add("blocky_move_backward");
             //UnityEngine.Debug.Log("blocky_move_backward");
         }
     }
@@ -54,7 +54,7 @@ namespace UBlockly
         protected override IEnumerator Execute(Block block)
         {
 			yield return null;
-			Game.workspace.AddCommand("blocky_turn_left");
+			Game.commands.Add("blocky_turn_left");
             //UnityEngine.Debug.Log("blocky_turn_left");
         }
     }
@@ -65,7 +65,7 @@ namespace UBlockly
         protected override IEnumerator Execute(Block block)
         {
 			yield return null;
-			Game.workspace.AddCommand("blocky_turn_right");
+			Game.commands.Add("blocky_turn_right");
             //UnityEngine.Debug.Log("blocky_turn_right");
         }
     }
@@ -76,7 +76,7 @@ namespace UBlockly
         protected override IEnumerator Execute(Block block)
         {
 			yield return null;
-			Game.workspace.AddCommand("blocky_jump_forward");
+			Game.commands.Add("blocky_jump_forward");
             //UnityEngine.Debug.Log("blocky_jump_forward");
         }
     }
@@ -87,7 +87,7 @@ namespace UBlockly
         protected override IEnumerator Execute(Block block)
         {
 			yield return null;
-			Game.workspace.AddCommand("blocky_jump_backward");
+			Game.commands.Add("blocky_jump_backward");
             //UnityEngine.Debug.Log("blocky_jump_backward");
         }
     }

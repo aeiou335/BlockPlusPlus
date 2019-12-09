@@ -45,7 +45,7 @@ public class CameraController : MonoBehaviour
 		
 		try 
 		{
-			if (Game.workspace.canvas.enabled) return;
+			if (Game.level.workspace.GetComponent<Canvas>().enabled) return;
 			if (Game.blocky.isFrozen()) return;
 		}
 		catch (System.Exception e) { return; }

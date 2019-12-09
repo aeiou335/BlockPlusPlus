@@ -7,9 +7,9 @@ public class Game
 {
 	public static BlockyController blocky;
 	public static CameraController camera;
-	public static WorkspaceController workspace;
+	public static CommandsController commands;
 	public static LevelController level;
 	public static SoundController sound;
-	public static int chapterNumber;
+	public static int chapterNumber = 3;
 	public static int levelNumber = 1;
 }
