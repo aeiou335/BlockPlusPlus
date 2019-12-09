@@ -36,11 +36,11 @@ public class LevelController : MonoBehaviour {
         //fadeInPanel.SetActive(true);
         CompletePanel.GetComponent<Canvas>().enabled = false;
         LosePanel.GetComponent<Canvas>().enabled = false;
-        string[] levelName = SceneManager.GetActiveScene().name.Split('_');
-        currentLevelPrefix = levelName[0];
-        currentLevel = int.Parse(levelName[1]);
+        //string[] levelName = SceneManager.GetActiveScene().name.Split('_');
+        //currentLevelPrefix = levelName[0];
+        //currentLevel = int.Parse(levelName[1]);
         //Debug.Log(currentLevel.Length);
-        level.text = "Level " + currentLevel;
+        level.text = "Level " + Game.levelNumber;
         //currentLevel = SceneManager.GetActiveScene().buildIndex;
 		
 		coins = GameObject.FindGameObjectsWithTag("Coin");
@@ -132,9 +132,8 @@ public class LevelController : MonoBehaviour {
     
     private void LoadNextScreen()
     {
-        int nextLevelNum = currentLevel + 1; 
-        Debug.Log(currentLevelPrefix + '_' + nextLevelNum);
-        SceneManager.LoadScene(currentLevelPrefix + '_' + nextLevelNum);
+        Game.levelNumber += 1;
+        SceneManager.LoadScene(Game.chapterNumber + '_' + Game.levelNumber);
     }
     
     public void Score(string type)
