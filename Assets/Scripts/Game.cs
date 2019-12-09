@@ -10,6 +10,7 @@ public class Game
 	public static WorkspaceController workspace;
 	public static LevelController level;
 	public static SoundController sound;
+	public static int chapterNumber;
 	public static int levelNumber = 1;
 	
 	/*
