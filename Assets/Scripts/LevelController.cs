@@ -6,17 +6,20 @@ using UnityEngine.UI;
 
 public class LevelController : MonoBehaviour {
 
-    public bool gameOver = false;
-    public float restartLevelDelay = 2f;
-    public Color32 gameOverColor = new Color32(249, 92, 64, 1);
-    public GameObject fadeOutPanel;
-    public GameObject fadeInPanel;
-    public GameObject youWonPanel;
-    public GameObject youLosePanel;
+    //public bool gameOver = false;
+    //public float restartLevelDelay = 2f;
+    //public Color32 gameOverColor = new Color32(249, 92, 64, 1);
+    //public GameObject fadeOutPanel;
+    //public GameObject fadeInPanel;
+    //public GameObject youWonPanel;
+    //public GameObject youLosePanel;
+    public GameObject workspace;
+    public GameObject playPanel;
     public GameObject CompletePanel;
     public GameObject LosePanel;
     public Text level;
-    public Text scoreText;
+    public Text textCoin;
+    public Text textDiamond;
 
     public bool paused;
     //public static int currentLevel;
@@ -30,7 +33,7 @@ public class LevelController : MonoBehaviour {
     public void Start()
     {
 		Game.level = this;
-        fadeInPanel.SetActive(true);
+        //fadeInPanel.SetActive(true);
         CompletePanel.GetComponent<Canvas>().enabled = false;
         LosePanel.GetComponent<Canvas>().enabled = false;
         string[] levelName = SceneManager.GetActiveScene().name.Split('_');
@@ -41,8 +44,7 @@ public class LevelController : MonoBehaviour {
         //currentLevel = SceneManager.GetActiveScene().buildIndex;
 		
 		coins = GameObject.FindGameObjectsWithTag("Coin");
-		scoreCoin = 0; scoreDiamond = 0;
-		scoreText.text = "Coin:0 Diamond:0";
+		ScoreReset();
 		//Restart();
     }
 
@@ -95,12 +97,11 @@ public class LevelController : MonoBehaviour {
     public void Restart()
     {
         //fadeOutPanel.SetActive(true);
+		ScoreReset();
         Game.blocky.Reset();
 		Game.camera.Reset();
         CompletePanel.GetComponent<Canvas>().enabled = false;
         LosePanel.GetComponent<Canvas>().enabled = false;
-		scoreCoin = 0; scoreDiamond = 0;
-		scoreText.text = "Coin:0 Diamond:0";
 		foreach (var coin in coins)
 			coin.transform.localScale = new Vector3(1f, 1f, 1f);
     }
@@ -140,7 +141,29 @@ public class LevelController : MonoBehaviour {
     {
 		if (type == "COIN") scoreCoin += 1;
 		if (type == "DIAMOND") scoreDiamond += 1;
-		scoreText.text = "Coin:" + scoreCoin + " Diamond:" + scoreDiamond;
+		textCoin.text = "x " + scoreCoin;
+		textDiamond.text = "x " + scoreDiamond;
     }
+    
+    public void ScoreReset()
+    {
+		scoreCoin = 0;
+		scoreDiamond = 0;
+		textCoin.text = "x 0";
+		textDiamond.text = "x 0";
+    }
+	
+	public void OnZoomInClicked() {
+		Game.camera.ZoomIn();
+	}
+	
+	public void OnZoomOutClicked() {
+		Game.camera.ZoomOut();
+	}
+	
+	public void OnSwitchClicked() {
+		workspace.GetComponent<Canvas>().enabled ^= true;
+		playPanel.GetComponent<Canvas>().enabled ^= true;
+	}
     
 }

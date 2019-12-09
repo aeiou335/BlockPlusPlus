@@ -18,10 +18,6 @@ public class WorkspaceController : MonoBehaviour
 	void Update() {
 	}
 	
-	public void ButtonSwitchClicked() {
-		canvas.enabled ^= true;
-	}
-	
 	public void ClearCommands() {
 		commands.Clear();
 	}
