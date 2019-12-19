@@ -113,7 +113,7 @@ public class LevelController : MonoBehaviour {
 
     public void NextLevel()
     {
-        if (currentLevel == maxLevel) {
+        if (Game.levelNumber == maxLevel) {
             Invoke("LoadEndScreen", 1);
         }
         else {
@@ -132,8 +132,10 @@ public class LevelController : MonoBehaviour {
     
     private void LoadNextScreen()
     {
+        Debug.Log(Game.chapterNumber);
+        Debug.Log(Game.levelNumber);
         Game.levelNumber += 1;
-        SceneManager.LoadScene(Game.chapterNumber + '_' + Game.levelNumber);
+        SceneManager.LoadScene("Level" + Game.chapterNumber + '_' + Game.levelNumber);
     }
     
     public void Score(string type)

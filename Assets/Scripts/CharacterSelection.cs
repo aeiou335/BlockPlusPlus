@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class MenuTest : MonoBehaviour {
+public class CharacterSelection : MonoBehaviour {
     public GameObject scrollbar;
     float scrollPos = 0;
     float[] pos;
@@ -35,10 +35,10 @@ public class MenuTest : MonoBehaviour {
 
         for (int i=0; i<pos.Length; i++) {
             if (scrollPos < pos[i] + (distance / 2) && scrollPos > pos[i] - (distance / 2)) {
-                transform.GetChild(i).localScale = Vector2.Lerp (transform.GetChild(i).localScale, new Vector2(1f, 1f), 0.1f);
+                transform.GetChild(i).localScale = Vector3.Lerp (transform.GetChild(i).localScale, new Vector3(200f, 200f, 200f), 10f);
                 for (int a=0; a<pos.Length; a++) {
                     if (a != i) {
-                        transform.GetChild(a).localScale = Vector2.Lerp(transform.GetChild(a).localScale, new Vector2(0.8f, 0.8f), 0.1f);
+                        transform.GetChild(a).localScale = Vector3.Lerp(transform.GetChild(a).localScale, new Vector3(160f, 160f, 160f), 10f);
                     }
                 }
             }

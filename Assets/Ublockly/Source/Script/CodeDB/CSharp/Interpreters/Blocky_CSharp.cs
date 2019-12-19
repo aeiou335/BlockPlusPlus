@@ -91,4 +91,24 @@ namespace UBlockly
             //UnityEngine.Debug.Log("blocky_jump_backward");
         }
     }
+
+    [CodeInterpreter(BlockType = "blocky_move_left")]
+    public class Blocky_Move_Left_Cmdtor : EnumeratorCmdtor
+    {
+        protected override IEnumerator Execute(Block block)
+        {
+			yield return null;
+			Game.workspace.AddCommand("blocky_move_left");
+        }
+    }
+	
+    [CodeInterpreter(BlockType = "blocky_move_right")]
+    public class Blocky_Move_Right_Cmdtor : EnumeratorCmdtor
+    {
+        protected override IEnumerator Execute(Block block)
+        {
+			yield return null;
+			Game.workspace.AddCommand("blocky_move_right");
+        }
+    }
 }

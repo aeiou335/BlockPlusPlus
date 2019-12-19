@@ -57,5 +57,17 @@ namespace UBlockly
         {
             return "blocky_jump_backward";
         }
+
+        [CodeGenerator(BlockType = "blocky_move_left")]
+        private string Blocky_Move_Left(Block block)
+        {
+            return "blocky_move_left";
+        }
+		
+        [CodeGenerator(BlockType = "blocky_move_right")]
+        private string Blocky_Move_Right(Block block)
+        {
+            return "blocky_move_right";
+        }
     }
 }

@@ -134,15 +134,23 @@ public class BlockyController : MonoBehaviour
 	void Move(string dir, string mode) 
 	{
 		if (state != "STOP") return;
-		var sign = (dir == "FORWARD"? 1: -1);
+		var signFront = 0;
+		var signLeft = 0;
+		if (dir == "FORWARD" || dir == "BACKWARD") 
+		{
+			signFront = (dir == "FORWARD"? 1: -1);
+		} else {
+			signLeft = (dir == "LEFT" ? 1 : -1);
+		}
+		//var sign = (dir == "FORWARD"? 1: -1);
 		var vx = (mode == "JUMP"? 1.5f: 2.0f); 
 		var vy = (mode == "JUMP"? 4.0f: 2.4f);
 		switch (direction) 
 		{
-			case   0: rb.velocity = new Vector3(vx*sign, vy, 0f); break;
-			case  90: rb.velocity = new Vector3(0f, vy, -vx*sign); break;
-			case 180: rb.velocity = new Vector3(-vx*sign, vy, 0f); break;
-			case 270: rb.velocity = new Vector3(0f, vy, vx*sign); break;
+			case   0: rb.velocity = new Vector3(vx*signFront, vy, vx*signLeft); break;
+			case  90: rb.velocity = new Vector3(vx*signLeft, vy, -vx*signFront); break;
+			case 180: rb.velocity = new Vector3(-vx*signFront, vy, -vx*signLeft); break;
+			case 270: rb.velocity = new Vector3(-vx*signLeft, vy, vx*signFront); break;
 		}
 		SetState("MOVE", 0);
 		startHeight = transform.position.y;
@@ -217,6 +225,8 @@ public class BlockyController : MonoBehaviour
 			case "blocky_turn_right":    Turn("RIGHT"); break;
 			case "blocky_jump_forward":  Move("FORWARD", "JUMP"); break;
 			case "blocky_jump_backward": Move("BACKWARD", "JUMP"); break;
+			case "blocky_move_left": Move("LEFT", "MOVE"); break;
+			case "blocky_move_right": Move("RIGHT", "MOVE"); break;
 			default: break;
 		}
 		commandIndex += 1;
