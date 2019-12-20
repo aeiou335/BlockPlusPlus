@@ -98,7 +98,7 @@ namespace UBlockly
         protected override IEnumerator Execute(Block block)
         {
 			yield return null;
-			Game.workspace.AddCommand("blocky_move_left");
+			Game.commands.Add("blocky_move_left");
         }
     }
 	
@@ -108,7 +108,7 @@ namespace UBlockly
         protected override IEnumerator Execute(Block block)
         {
 			yield return null;
-			Game.workspace.AddCommand("blocky_move_right");
+			Game.commands.Add("blocky_move_right");
         }
     }
 }

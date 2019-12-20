@@ -286,7 +286,6 @@ public class BlockyController : MonoBehaviour
 				Game.sound.play("WIN");
 				break;
 			case "Door":
-				standOn = "DOOR";
 				if (state == "MOVE" || state == "TURN") SetState("COOL", 10);
 				break;
 			default:
