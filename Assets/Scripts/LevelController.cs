@@ -65,6 +65,8 @@ public class LevelController : MonoBehaviour {
 			coin.transform.localScale = new Vector3(1f, 1f, 1f);
 		foreach (var diamond in diamonds)
 			diamond.transform.localScale = new Vector3(1f, 1f, 1f);
+        foreach (var portal in portals)
+            portal.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
 	}
 
     public void Update()

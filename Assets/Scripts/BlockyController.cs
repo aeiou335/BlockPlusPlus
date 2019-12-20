@@ -20,6 +20,8 @@ public class BlockyController : MonoBehaviour
 	bool isRunning;
 	float startHeight;
 	bool isLanded;
+	bool isSent;
+	float portalDelay;
 	
 	void Awake() 
 	{ 
@@ -54,7 +56,9 @@ public class BlockyController : MonoBehaviour
 		rb.velocity = Vector3.zero;
 		breathValue = 1;
 		isRunning = false;
+		isSent = false;
 		isLanded = true;
+		portalDelay = Time.time;
 		SetState("RESET", 50);
 	}
 	
@@ -224,9 +228,6 @@ public class BlockyController : MonoBehaviour
 
 	void DoorCorrection()
 	{
-		Debug.Log(Game.level.portals[0].transform.position);
-		Debug.Log(Game.level.portals[1].transform.position);
-		//var new_pos = Game.level.portals[0].transform.position;
 		var old_pos = Game.blocky.transform.position;
 		foreach (var portal in Game.level.portals)
 		{
@@ -237,14 +238,20 @@ public class BlockyController : MonoBehaviour
 				transform.position = new Vector3(new_pos.x, old_pos.y, new_pos.z);
 				break;
 			}
-		}		
-		Correction();
+		}
+		/*
+		foreach (var portal in Game.level.portals)
+		{
+			portal.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
+		}
+		*/
 	}
 	
 	// Do the next command
 	void NextCommand() 
 	{
 		var command = Game.commands.Next();
+		
 		switch (command) 
 		{
 			case "blocky_move_forward":  Move("FORWARD", "MOVE"); break;
@@ -261,6 +268,21 @@ public class BlockyController : MonoBehaviour
 				SetState("DEAD", 50);
 				break;
 			default: break;
+		}
+		Debug.Log(command);
+		/*
+		if (command == "blocky_move_forward" || command == "blocky_move_backward" ||
+			command == "blocky_jump_forward" || command == "blocky_jump_backward" ||
+			command == "blocky_move_left" || command == "blocky_move_right")
+		{
+			Debug.Log("isSent resets.");
+			isSent = false;
+		}
+		*/
+		if (Time.time - portalDelay > 1.2) 
+		{
+			isSent = false;
+			portalDelay = Time.time;
 		}
 	}
 
@@ -285,9 +307,11 @@ public class BlockyController : MonoBehaviour
 				SetState("WIN", 50);
 				Game.sound.play("WIN");
 				break;
+			/*
 			case "Door":
 				if (state == "MOVE" || state == "TURN") SetState("COOL", 10);
 				break;
+			*/
 			default:
 				Debug.Log("Collision = Others");
 				SetState("DEAD", 50);
@@ -298,10 +322,14 @@ public class BlockyController : MonoBehaviour
 	
 	void OnTriggerEnter(Collider collider) 
 	{			
-		//Debug.Log(collider.tag);
-		if (collider.tag == "Door")
+		Debug.Log("zzzzzzz");
+		Debug.Log(Time.time - portalDelay);
+		
+		if (collider.tag == "Door" && !isSent)
 		{
+			Debug.Log(collider.tag);
 			DoorCorrection();
+			isSent = true;
 		}
 		//OnCollisionEnter(collision);
 	}
