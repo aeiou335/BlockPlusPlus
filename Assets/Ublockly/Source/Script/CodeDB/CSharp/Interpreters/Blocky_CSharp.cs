@@ -32,7 +32,7 @@ namespace UBlockly
         protected override IEnumerator Execute(Block block)
         {
 			yield return null;
-			Game.workspace.AddCommand("blocky_move_forward");
+			Game.commands.Add("blocky_move_forward");
             //UnityEngine.Debug.Log("blocky_move_forward");
         }
     }
@@ -43,7 +43,7 @@ namespace UBlockly
         protected override IEnumerator Execute(Block block)
         {
 			yield return null;
-			Game.workspace.AddCommand("blocky_move_backward");
+			Game.commands.Add("blocky_move_backward");
             //UnityEngine.Debug.Log("blocky_move_backward");
         }
     }
@@ -54,7 +54,7 @@ namespace UBlockly
         protected override IEnumerator Execute(Block block)
         {
 			yield return null;
-			Game.workspace.AddCommand("blocky_turn_left");
+			Game.commands.Add("blocky_turn_left");
             //UnityEngine.Debug.Log("blocky_turn_left");
         }
     }
@@ -65,8 +65,50 @@ namespace UBlockly
         protected override IEnumerator Execute(Block block)
         {
 			yield return null;
-			Game.workspace.AddCommand("blocky_turn_right");
+			Game.commands.Add("blocky_turn_right");
             //UnityEngine.Debug.Log("blocky_turn_right");
+        }
+    }
+	
+    [CodeInterpreter(BlockType = "blocky_jump_forward")]
+    public class Blocky_Jump_Forward_Cmdtor : EnumeratorCmdtor
+    {
+        protected override IEnumerator Execute(Block block)
+        {
+			yield return null;
+			Game.commands.Add("blocky_jump_forward");
+            //UnityEngine.Debug.Log("blocky_jump_forward");
+        }
+    }
+	
+    [CodeInterpreter(BlockType = "blocky_jump_backward")]
+    public class Blocky_Jump_Backward_Cmdtor : EnumeratorCmdtor
+    {
+        protected override IEnumerator Execute(Block block)
+        {
+			yield return null;
+			Game.commands.Add("blocky_jump_backward");
+            //UnityEngine.Debug.Log("blocky_jump_backward");
+        }
+    }
+
+    [CodeInterpreter(BlockType = "blocky_move_left")]
+    public class Blocky_Move_Left_Cmdtor : EnumeratorCmdtor
+    {
+        protected override IEnumerator Execute(Block block)
+        {
+			yield return null;
+			Game.commands.Add("blocky_move_left");
+        }
+    }
+	
+    [CodeInterpreter(BlockType = "blocky_move_right")]
+    public class Blocky_Move_Right_Cmdtor : EnumeratorCmdtor
+    {
+        protected override IEnumerator Execute(Block block)
+        {
+			yield return null;
+			Game.commands.Add("blocky_move_right");
         }
     }
 }

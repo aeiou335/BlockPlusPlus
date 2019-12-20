@@ -144,8 +144,8 @@ namespace UBlockly
         /// <returns></returns>
         IEnumerator SimulateCoroutine(IEnumerator itorFunc)
         {
-			Game.workspace.ClearCommands();
-			Game.workspace.AddCommand("<start>");
+			Game.commands.Clear();
+			Game.commands.Add("<start>");
 			
             Debug.LogFormat("<color=green>[CodeRunner]SimulateCoroutine: begin - time: {0}.</color>", Time.time);
 
@@ -182,9 +182,11 @@ namespace UBlockly
             mCoroutineDict.Remove(itorFunc);
             Debug.LogFormat("<color=green>[CodeRunner]SimulateCoroutine: end - time: {0}.</color>", Time.time);
 			
-			Game.workspace.AddCommand("<stop>");
-			Game.workspace.canvas.enabled = false;
-			Game.blocky.CommandStart();
+			Game.commands.Add("<stop>");
+			Game.commands.Reset();
+			Game.level.OnSwitchClicked();
+			Game.level.EnableStopButton();
+			Game.blocky.Run();
         }
     }
 }

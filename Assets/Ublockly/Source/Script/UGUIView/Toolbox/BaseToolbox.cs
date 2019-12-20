@@ -157,6 +157,10 @@ namespace UBlockly.UGUI
 				case "blocky_move_backward": return new Color(1.0f, 0.6f, 0.3f);
 				case "blocky_turn_left": return new Color(0.0f, 0.8f, 0.9f);
 				case "blocky_turn_right": return new Color(0.0f, 0.8f, 0.9f);
+				case "blocky_jump_forward": return new Color(0.2f, 0.8f, 0.2f);
+				case "blocky_jump_backward": return new Color(0.2f, 0.8f, 0.2f);
+                case "blocky_move_left": return new Color(0.4f, 0.6f, 0.4f);
+                case "blocky_move_right": return new Color(0.4f, 0.6f, 0.4f);
 				default: break;
 			}
             foreach (var category in mConfig.BlockCategoryList)

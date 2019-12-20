@@ -2,56 +2,61 @@
 using System.Collections;
 using UnityEngine.EventSystems;
 
-public class CameraController : MonoBehaviour {
-	
-	readonly Vector3 resetPosition = new Vector3(-10f, 10f, -10f);
-	readonly Vector3 resetTargetPosition = new Vector3(3.5f, 2.0f, 1.0f);
+public class CameraController : MonoBehaviour 
+{
+	//readonly Vector3 positionReset = new Vector3(-10f, 10f, -10f);
+	//readonly Vector3 targetPositionReset = new Vector3(3.5f, 2.0f, 1.0f);
+	readonly Vector3 positionReset = new Vector3(-15f, 15f, -15f);
+	readonly Vector3 targetPositionReset = new Vector3(5f, 5f, 2f);
 	readonly float speed = 3f;
 	
 	Vector3 targetPosition;
 	Vector3 lookPosition;
-	Vector3 lookPositionLast;
+	//Vector3 lookPositionLast;
 	float lastDistance;
 	
-	void Awake() { 
+	void Awake() 
+	{ 
 		Game.camera = this;
-	} 
-	
-	void Start() {
 	}
 	
-	public void Reset() {
+	void Start()
+	{
+		var grounds = GameObject.FindGameObjectsWithTag("Ground");
+		lookPosition = new Vector3(0, 0, 0);
+		foreach (var ground in grounds)
+			lookPosition += ground.transform.position;
+		lookPosition /= grounds.Length;
+		Reset();
+	}
+	
+	public void Reset() 
+	{
 		lastDistance = -1;
-		lookPosition = Game.blocky.transform.position;
-		lookPositionLast = lookPosition;
-		var angle = 0.0f;
-		switch (Game.blocky.direction) {
-			case "XP": angle = Mathf.PI*0.0f; break;
-			case "ZN": angle = Mathf.PI*0.5f; break;
-			case "XN": angle = Mathf.PI*1.0f; break;
-			case "ZP": angle = Mathf.PI*1.5f; break;
-		}
-		//Debug.Log(angle);
-		transform.position = RotateY(resetPosition, angle) + lookPosition;
-		targetPosition = RotateY(resetTargetPosition, angle) + lookPosition;
+		transform.position = positionReset + lookPosition;
+		targetPosition = targetPositionReset + lookPosition;
 	}
 	
-	void Update() {
+	void Update() 
+	{
+		// keep following target's position
+		transform.LookAt(lookPosition);
+		transform.position += (targetPosition-transform.position)*0.1f;
 		
-		{ // keep following target's position
-			lookPosition = Game.blocky.transform.position;
-			transform.LookAt(lookPosition);
-			targetPosition += (lookPosition-lookPositionLast);
-			lookPositionLast = lookPosition;
-			transform.position += (targetPosition-transform.position)*0.1f;
+		try 
+		{
+			if (Game.level.workspace.GetComponent<Canvas>().enabled) return;
 		}
+		catch (System.Exception e) { return; }
 		
-		if (Game.workspace.canvas.enabled) return;
-		if (Game.blocky.isFrozen()) return;
+		// if not ready yet
+		if (Game.blocky.isFrozen() || Game.blocky.isEnded()) return;
 		
 		// rotate camera angle when drag
-		if ((Input.touchCount == 0 && Input.GetMouseButton(0) && Input.mousePosition.y > 100) || 
-			(Input.touchCount == 1 && Input.GetTouch(0).position.y > 100)) {
+		if ((Input.touchCount == 0 && Input.GetMouseButton(0)) || (Input.touchCount == 1)) 
+		//if ((Input.touchCount == 0 && Input.GetMouseButton(0) && Input.mousePosition.y > 100) || 
+		//	(Input.touchCount == 1 && Input.GetTouch(0).position.y > 100)) 
+		{
 			float dx = Input.GetAxis("Mouse X") * 3f;
 			float dy = Input.GetAxis("Mouse Y") * 3f;
 			if (Input.touchCount > 0) {
@@ -72,7 +77,8 @@ public class CameraController : MonoBehaviour {
 		// 2-touch zoom
 		if (Input.touchCount != 2) 
 			lastDistance = -1;
-		if (Input.touchCount == 2) {
+		if (Input.touchCount == 2) 
+		{
 			Vector3 pos1 = Input.GetTouch(0).position;
 			Vector3 pos2 = Input.GetTouch(1).position;
 			float distance = (pos1-pos2).magnitude;
@@ -90,78 +96,21 @@ public class CameraController : MonoBehaviour {
 			}
 		}
 		
-		// zoom
+		// keyboard zoom
 		if (Input.GetKeyDown(",")) ZoomIn();
 		if (Input.GetKeyDown(".")) ZoomOut();
 		
 	}
 	
-	// rotate a point around Y-axis by some angle
-	Vector3 RotateY(Vector3 point, float angle) {
-		float x = Mathf.Cos(angle)*point.x+Mathf.Sin(angle)*point.z;
-		float y = point.y;
-		float z = Mathf.Cos(angle)*point.z-Mathf.Sin(angle)*point.x;
-		return new Vector3(x, y, z);
-	}
-	
-	public void ZoomIn() {
+	public void ZoomIn() 
+	{
 		if ((transform.position - lookPosition).magnitude < 1) return;
 		targetPosition -= (targetPosition-lookPosition)*0.2f;
 	}
 	
-	public void ZoomOut() {
+	public void ZoomOut() 
+	{
 		if ((transform.position - lookPosition).magnitude > 100) return;
 		targetPosition += (targetPosition-lookPosition)*0.2f;
 	}
 }
-
-
-/*
-
-public class DragCamera : MonoBehaviour
-{
-	public Camera camera;
-	public GameObject player;
-	public float speed = 2f;
-	
-	void Awake() {
-		camera = Camera.main;
-		player = GameObject.FindWithTag("Player");
-	}
-	
-	void Update() {
-		if (Input.GetMouseButton(0)) {
-			camera.transform.RotateAround(
-				new Vector3(0, 0, 0), //player.transform.position, 
-				camera.transform.up,
-				+Input.GetAxis("Mouse X")*speed
-			);
-			camera.transform.RotateAround(
-				new Vector3(0, 0, 0), //player.transform.position, 
-				camera.transform.right,
-				-Input.GetAxis("Mouse Y")*speed
-			);
-			camera.transform.rotation = Quaternion.Euler(
-				camera.transform.rotation.eulerAngles.x, 
-				camera.transform.rotation.eulerAngles.y, 0f );
-		}
-	}
-	
-}
-
- public class DragCamera : MonoBehaviour {
-     public float speed = 3.5f;
-     private float X;
-     private float Y;
- 
-     void Update() {
-         if(Input.GetMouseButton(0)) {
-             transform.Rotate(new Vector3(Input.GetAxis("Mouse Y") * speed, -Input.GetAxis("Mouse X") * speed, 0));
-             X = transform.rotation.eulerAngles.x;
-             Y = transform.rotation.eulerAngles.y;
-             transform.rotation = Quaternion.Euler(X, Y, 0);
-         }
-     }
- }
- 
-*/
