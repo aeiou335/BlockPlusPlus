@@ -17,6 +17,8 @@ public class LevelController : MonoBehaviour {
     public GameObject playPanel;
     public GameObject CompletePanel;
     public GameObject LosePanel;
+    public GameObject runButton;
+    public GameObject stopButton;
     public Text level;
     public Text textCoin;
     public Text textDiamond;
@@ -29,26 +31,41 @@ public class LevelController : MonoBehaviour {
 	
 	public GameObject[] coins;
     public GameObject[] portals;
+	public GameObject[] diamonds;
 	public int scoreCoin, scoreDiamond;
+	
+	List<string> commands = new List<string>();
+	
+	void Awake() 
+	{ 
+		Game.level = this;
+	}
 	
     public void Start()
     {
-		Game.level = this;
-        //fadeInPanel.SetActive(true);
+        level.text = "Level " + Game.chapterNumber + "-" + Game.levelNumber;
+		coins = GameObject.FindGameObjectsWithTag("Coin");
+		diamonds = GameObject.FindGameObjectsWithTag("Diamond");
+        portals = GameObject.FindGameObjectsWithTag("Door");
+		Reset();
+    }
+	
+	void Reset() 
+	{
+		scoreCoin = 0;
+		scoreDiamond = 0;
+		textCoin.text = "x 0";
+		textDiamond.text = "x 0";
+		EnableRunButton();
+        workspace.GetComponent<Canvas>().enabled = false;
+        playPanel.GetComponent<Canvas>().enabled = true;
         CompletePanel.GetComponent<Canvas>().enabled = false;
         LosePanel.GetComponent<Canvas>().enabled = false;
-        //string[] levelName = SceneManager.GetActiveScene().name.Split('_');
-        //currentLevelPrefix = levelName[0];
-        //currentLevel = int.Parse(levelName[1]);
-        //Debug.Log(currentLevel.Length);
-        level.text = "Level " + Game.levelNumber;
-        //currentLevel = SceneManager.GetActiveScene().buildIndex;
-		
-		coins = GameObject.FindGameObjectsWithTag("Coin");
-        portals = GameObject.FindGameObjectsWithTag("Door");
-		ScoreReset();
-		//Restart();
-    }
+		foreach (var coin in coins)
+			coin.transform.localScale = new Vector3(1f, 1f, 1f);
+		foreach (var diamond in diamonds)
+			diamond.transform.localScale = new Vector3(1f, 1f, 1f);
+	}
 
     public void Update()
     {
@@ -99,13 +116,9 @@ public class LevelController : MonoBehaviour {
     public void Restart()
     {
         //fadeOutPanel.SetActive(true);
-		ScoreReset();
         Game.blocky.Reset();
 		Game.camera.Reset();
-        CompletePanel.GetComponent<Canvas>().enabled = false;
-        LosePanel.GetComponent<Canvas>().enabled = false;
-		foreach (var coin in coins)
-			coin.transform.localScale = new Vector3(1f, 1f, 1f);
+		Reset();
     }
 
     private void ReloadScreen()
@@ -134,10 +147,8 @@ public class LevelController : MonoBehaviour {
     
     private void LoadNextScreen()
     {
-        Debug.Log(Game.chapterNumber);
-        Debug.Log(Game.levelNumber);
-        Game.levelNumber += 1;
         SceneManager.LoadScene("Level" + Game.chapterNumber + '_' + Game.levelNumber);
+		Game.levelNumber += 1;
     }
     
     public void Score(string type)
@@ -147,26 +158,50 @@ public class LevelController : MonoBehaviour {
 		textCoin.text = "x " + scoreCoin;
 		textDiamond.text = "x " + scoreDiamond;
     }
-    
-    public void ScoreReset()
-    {
-		scoreCoin = 0;
-		scoreDiamond = 0;
-		textCoin.text = "x 0";
-		textDiamond.text = "x 0";
-    }
 	
-	public void OnZoomInClicked() {
+	// Zoom in button clicked
+	public void OnZoomInClicked() 
+	{
 		Game.camera.ZoomIn();
 	}
 	
-	public void OnZoomOutClicked() {
+	// Zoom out button clicked
+	public void OnZoomOutClicked() 
+	{
 		Game.camera.ZoomOut();
 	}
 	
-	public void OnSwitchClicked() {
+	// Switch button clicked
+	public void OnSwitchClicked() 
+	{
 		workspace.GetComponent<Canvas>().enabled ^= true;
 		playPanel.GetComponent<Canvas>().enabled ^= true;
+	}
+	
+	// Stop button clicked
+	public void OnStopClicked() 
+	{
+		Restart();
+	}
+	
+	// Quit button clicked
+    public void OnQuitClicked()
+    {
+        SceneManager.LoadScene("Chapter");
+    }
+	
+	// Enable run button
+	public void EnableRunButton() 
+	{
+		runButton.GetComponent<Button>().interactable = true;
+		stopButton.GetComponent<Button>().interactable = false;
+	}
+	
+	// Enable stop button
+	public void EnableStopButton() 
+	{
+		runButton.GetComponent<Button>().interactable = false;
+		stopButton.GetComponent<Button>().interactable = true;
 	}
     
 }

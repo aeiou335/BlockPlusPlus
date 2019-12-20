@@ -45,10 +45,12 @@ public class CameraController : MonoBehaviour
 		
 		try 
 		{
-			if (Game.workspace.canvas.enabled) return;
-			if (Game.blocky.isFrozen()) return;
+			if (Game.level.workspace.GetComponent<Canvas>().enabled) return;
 		}
 		catch (System.Exception e) { return; }
+		
+		// if not ready yet
+		if (Game.blocky.isFrozen() || Game.blocky.isEnded()) return;
 		
 		// rotate camera angle when drag
 		if ((Input.touchCount == 0 && Input.GetMouseButton(0)) || (Input.touchCount == 1)) 

@@ -27,8 +27,8 @@ public class LevelsController : MonoBehaviour {
     }
     public void PlayButtonClicked(int level)
     {
-        Game.levelNumber = level;
-        SceneManager.LoadScene("Level" + Game.chapterNumber + "_" + level);
+		Game.levelNumber = level;
+        SceneManager.LoadScene("Level" + Game.chapterNumber + "_" + Game.levelNumber);
     }
     
     public void BackButtonClicked()
