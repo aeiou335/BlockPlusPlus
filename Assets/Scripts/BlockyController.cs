@@ -19,7 +19,7 @@ public class BlockyController : MonoBehaviour
 	Vector3 turnAxis;
 	bool isRunning;
 	float startHeight;
-	string standOn;
+	bool isLanded;
 	
 	void Awake() 
 	{ 
@@ -54,13 +54,18 @@ public class BlockyController : MonoBehaviour
 		rb.velocity = Vector3.zero;
 		breathValue = 1;
 		isRunning = false;
-		SetState("RESET", countDown);
+		isLanded = true;
+		SetState("RESET", 50);
 	}
 	
 	void Update() 
 	{
 		if (isFrozen()) return;
-		if (transform.position.y < -10) SetState("DEAD", 0);
+		if (transform.position.y < -10) 
+		{
+			Debug.Log("position.y < -10");
+			SetState("DEAD", 0);
+		}
 	}
 	
 	// Called every timer ticks
@@ -90,12 +95,12 @@ public class BlockyController : MonoBehaviour
 				CheckCollision();
 				if (transform.position.y < startHeight) 
 					rb.velocity = new Vector3(0, rb.velocity.y, 0);
-				//if (rb.velocity.magnitude < 0.01 && rb.angularVelocity.magnitude < 0.01) 
-				//	SetState("COOL", 15);
+				if (--countDown < 0) isLanded = false;
 				break;
 			case "TURN":
 				if (Mathf.Abs(Mathf.DeltaAngle(transform.eulerAngles.y, direction)) > 2) 
 					transform.RotateAround(transform.position, turnAxis, timerDelay*200);
+				if (--countDown < 0) isLanded = false;
 				break;
 			default:
 				break;
@@ -143,7 +148,7 @@ public class BlockyController : MonoBehaviour
 			case 180: rb.velocity = new Vector3(-vx*sign, vy, 0f); break;
 			case 270: rb.velocity = new Vector3(0f, vy, vx*sign); break;
 		}
-		SetState("MOVE", 0);
+		SetState("MOVE", 5);
 		startHeight = transform.position.y;
 		Game.sound.play("JUMP");
 	}
@@ -152,7 +157,7 @@ public class BlockyController : MonoBehaviour
 	void Turn(string dir) 
 	{
 		if (state != "STOP") return;
-		SetState("TURN", 0);
+		SetState("TURN", 5);
 		rb.velocity = new Vector3(0f, 2.6f, 0f);
 		direction = (direction + (dir == "LEFT"? 270: 90)) % 360;
 		turnAxis = (dir == "LEFT"? Vector3.down: Vector3.up);
@@ -186,15 +191,23 @@ public class BlockyController : MonoBehaviour
 		rb.angularVelocity = new Vector3(0f, 0f, 0f);
 	}
 	
-	// Check Collision for coin,diamond,star
+	// Check Collision for coin,diamond
 	void CheckCollision()
 	{
 		foreach (var coin in Game.level.coins)
 			if ((coin.transform.position - transform.position).magnitude < 0.5 && 
 				coin.transform.localScale.magnitude > 1)
 			{
-				Game.level.Score("COIN");
 				coin.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
+				Game.level.Score("COIN");
+			}
+		foreach (var diamond in Game.level.diamonds)
+			if ((diamond.transform.position - transform.position).magnitude < 0.5 && 
+				diamond.transform.localScale.magnitude > 1)
+			{
+				diamond.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
+				SetState("WIN", 50);
+				Game.sound.play("WIN");
 			}
 	}
 	
@@ -223,22 +236,25 @@ public class BlockyController : MonoBehaviour
 	void OnCollisionEnter(Collision collision) 
 	{
 		if (isFrozen() || isEnded()) return;
-		Debug.Log("Collision = " + collision.collider.tag);
+		//Debug.Log("Collision = " + collision.collider.tag);
 		switch (collision.collider.tag) 
 		{
 			case "Ground":
-				standOn = "GROUND";
-				if (state == "MOVE" || state == "TURN") SetState("COOL", 10);
-				break;
 			case "Stair":
-				standOn = "STAIR";
-				if (state == "MOVE" || state == "TURN") SetState("COOL", 10);
+				if ((state == "MOVE" || state == "TURN") && !isLanded)
+				{
+					Debug.Log("Collision = Ground/Stair");
+					isLanded = true;
+					SetState("COOL", 10);
+				}
 				break;
-			case "Flag":
+			case "Flag": // will be replaced by diamond
+				Debug.Log("Collision = Flag");
 				SetState("WIN", 50);
 				Game.sound.play("WIN");
 				break;
 			default:
+				Debug.Log("Collision = Others");
 				SetState("DEAD", 50);
 				break;
 		}

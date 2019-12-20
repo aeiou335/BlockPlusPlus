@@ -30,6 +30,7 @@ public class LevelController : MonoBehaviour {
     public string currentLevelPrefix;
 	
 	public GameObject[] coins;
+	public GameObject[] diamonds;
 	public int scoreCoin, scoreDiamond;
 	
 	List<string> commands = new List<string>();
@@ -43,6 +44,7 @@ public class LevelController : MonoBehaviour {
     {
         level.text = "Level " + Game.chapterNumber + "-" + Game.levelNumber;
 		coins = GameObject.FindGameObjectsWithTag("Coin");
+		diamonds = GameObject.FindGameObjectsWithTag("Diamond");
 		Reset();
     }
 	
@@ -59,6 +61,8 @@ public class LevelController : MonoBehaviour {
         LosePanel.GetComponent<Canvas>().enabled = false;
 		foreach (var coin in coins)
 			coin.transform.localScale = new Vector3(1f, 1f, 1f);
+		foreach (var diamond in diamonds)
+			diamond.transform.localScale = new Vector3(1f, 1f, 1f);
 	}
 
     public void Update()
