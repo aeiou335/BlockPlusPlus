@@ -28,6 +28,7 @@ public class LevelController : MonoBehaviour {
     public string currentLevelPrefix;
 	
 	public GameObject[] coins;
+    public GameObject[] portals;
 	public int scoreCoin, scoreDiamond;
 	
     public void Start()
@@ -44,6 +45,7 @@ public class LevelController : MonoBehaviour {
         //currentLevel = SceneManager.GetActiveScene().buildIndex;
 		
 		coins = GameObject.FindGameObjectsWithTag("Coin");
+        portals = GameObject.FindGameObjectsWithTag("Door");
 		ScoreReset();
 		//Restart();
     }

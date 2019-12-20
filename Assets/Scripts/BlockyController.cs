@@ -84,7 +84,7 @@ public class BlockyController : MonoBehaviour
 				if (commandRunning) NextCommand();
 				break;
 			case "COOL":
-				Correction();
+				 Correction();
 				if (--countDown < 0) SetState("STOP", 0);
 				break;
 			case "MOVE":
@@ -93,6 +93,9 @@ public class BlockyController : MonoBehaviour
 					rb.velocity = new Vector3(0, rb.velocity.y, 0);
 				//if (rb.velocity.magnitude < 0.01 && rb.angularVelocity.magnitude < 0.01) 
 				//	SetState("COOL", 15);
+				break;
+			case "SEND":
+				DoorCorrection();
 				break;
 			case "TURN":
 				if (Mathf.Abs(Mathf.DeltaAngle(transform.eulerAngles.y, direction)) > 2) 
@@ -206,6 +209,25 @@ public class BlockyController : MonoBehaviour
 				coin.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
 			}
 	}
+
+	void DoorCorrection()
+	{
+		Debug.Log(Game.level.portals[0].transform.position);
+		Debug.Log(Game.level.portals[1].transform.position);
+		//var new_pos = Game.level.portals[0].transform.position;
+		var old_pos = Game.blocky.transform.position;
+		foreach (var portal in Game.level.portals)
+		{
+			Debug.Log((portal.transform.position - transform.position).magnitude);
+			if ((portal.transform.position - transform.position).magnitude > 0.5 )
+			{
+				var new_pos = portal.transform.position;
+				transform.position = new Vector3(new_pos.x, old_pos.y, new_pos.z);
+				break;
+			}
+		}		
+		Correction();
+	}
 	
 	// Do the next command
 	void NextCommand() 
@@ -251,17 +273,25 @@ public class BlockyController : MonoBehaviour
 				SetState("WIN", 50);
 				Game.sound.play("WIN");
 				break;
+			case "Door":
+				standOn = "DOOR";
+				if (state == "MOVE" || state == "TURN") SetState("COOL", 10);
+				break;
 			default:
 				SetState("DEAD", 50);
 				break;
 		}
 	}
 	
-	/*
-	void OnTriggerEnter(Collision collision) 
-	{
-		Debug.Log("Trigger = " + collision.collider.tag);
-		OnCollisionEnter(collision);
+	
+	void OnTriggerEnter(Collider collider) 
+	{			
+		//Debug.Log(collider.tag);
+		if (collider.tag == "Door")
+		{
+			DoorCorrection();
+		}
+		//OnCollisionEnter(collision);
 	}
-	*/
+	
 }
