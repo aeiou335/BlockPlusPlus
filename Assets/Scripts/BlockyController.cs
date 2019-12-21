@@ -150,8 +150,8 @@ public class BlockyController : MonoBehaviour
 			signLeft = (dir == "LEFT" ? 1 : -1);
 		}
 		//var sign = (dir == "FORWARD"? 1: -1);
-		var vx = (mode == "JUMP"? 1.5f: 2.0f); 
-		var vy = (mode == "JUMP"? 4.0f: 2.4f);
+		var vx = (mode == "JUMP"? 1.3f: 2.0f); 
+		var vy = (mode == "JUMP"? 4.5f: 2.4f);
 		switch (direction) 
 		{
 			case   0: rb.velocity = new Vector3(vx*signFront, vy, vx*signLeft); break;
