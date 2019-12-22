@@ -77,6 +77,7 @@ public class BlockyController : MonoBehaviour
 	void TimerTick() 
 	{
 		//if (state != "SHRINK" || state != "ZOOM") Breath();
+		Breath();
 		switch (state) 
 		{
 			case "RESET":
@@ -298,6 +299,7 @@ public class BlockyController : MonoBehaviour
 			case "<start>": break;
 			case "<stop>":
 				isRunning = false;
+				Debug.Log("End Of Commands");
 				SetState("DEAD", 50);
 				break;
 			default: break;
