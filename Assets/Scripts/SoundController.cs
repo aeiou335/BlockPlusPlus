@@ -11,7 +11,11 @@ public class SoundController : MonoBehaviour {
 	{
 		Game.sound = this;
 		sources = GetComponents<AudioSource>();
-		names = new string[] {"jump1", "jump2", "jump3", "win", "connect", "delete", "play"};
+		names = new string[] 
+		{
+			"jump1", "jump2", "jump3", "win", "connect", 
+			"delete", "play", "portal1", "portal2", "portal3"
+		};
 	}
 	
 	public void play(string sound) 
@@ -23,6 +27,7 @@ public class SoundController : MonoBehaviour {
 			case "CONNECT": _play("connect"); break;
 			case "DELETE": _play("delete"); break;
 			case "PLAY": _play("play"); break;
+			case "PORTAL": _play("portal"+(new System.Random()).Next(2, 4)); break;
 			default: break;
 		}
 	}

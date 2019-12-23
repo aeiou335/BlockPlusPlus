@@ -5,7 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class CommandsController : MonoBehaviour
 {	
-	List<string> list = new List<string>();
+	List<string> commands = new List<string>();
+	List<int> puzzles = new List<int>();
 	int index;
 
 	void Awake() 
@@ -16,25 +17,41 @@ public class CommandsController : MonoBehaviour
 	// clear all commands
 	public void Clear() 
 	{
-		list.Clear();
+		commands.Clear();
+		puzzles.Clear();
 	}
 	
-	// clear add commands
+	// add command
 	public void Add(string command) 
 	{
-		list.Add(command);
+		commands.Add(command);
 	}
 	
+	// reset, ready for run
 	public void Reset()
 	{
 		index = 0;
 	}
 	
+	// get next command
 	public string Next() 
 	{
-		if (index >= list.Count) 
+		if (index >= commands.Count) 
 			return "<stop>";
-		return list[index++];
+		return commands[index++];
+	}
+	
+	// add puzzle
+	public void AddPuzzle(int puzzle) 
+	{
+		if (puzzles.IndexOf(puzzle) == -1)
+			puzzles.Add(puzzle);
+	}
+	
+	// get number of puzzles 
+	public int PuzzlesNumber() 
+	{
+		return puzzles.Count;
 	}
 	
 }

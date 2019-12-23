@@ -153,6 +153,7 @@ public class BlockyController : MonoBehaviour
 	{
 		if (isFrozen() || isEnded()) return;
 		isRunning = true;
+		Debug.LogFormat("<color=blue>Number of puzzles = {0}.</color>", Game.commands.PuzzlesNumber());
 	}
 	
 	// Set state

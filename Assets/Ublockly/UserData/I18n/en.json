@@ -1002,12 +1002,12 @@
     /// block text - This precedes the name of the function when defining it.  See
     /// [https://blockly-demo.appspot.com/static/apps/code/index.html?lang=en#c84aoc this sample
     /// function definition].
-    "PROCEDURES_DEFNORETURN_TITLE": "to",
+    "PROCEDURES_DEFNORETURN_TITLE": "",
     /// default name - This acts as a placeholder for the name of a function on a
     /// function definition block: as shown on
     /// [https://blockly-demo.appspot.com/static/apps/code/index.html?lang=en#w7cfju this block].
     /// The user will replace it with the function's name.
-    "PROCEDURES_DEFNORETURN_PROCEDURE": "do something",
+    "PROCEDURES_DEFNORETURN_PROCEDURE": " Procedure",
     /// block text - This precedes the list of parameters on a function's defiition block.  See
     /// [https://blockly-demo.appspot.com/static/apps/code/index.html?lang=en#voztpd this sample
     /// function with parameters].

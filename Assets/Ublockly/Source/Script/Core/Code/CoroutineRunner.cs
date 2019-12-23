@@ -144,7 +144,6 @@ namespace UBlockly
         /// <returns></returns>
         IEnumerator SimulateCoroutine(IEnumerator itorFunc)
         {
-			Game.commands.Clear();
 			Game.commands.Add("<start>");
 			
             Debug.LogFormat("<color=green>[CodeRunner]SimulateCoroutine: begin - time: {0}.</color>", Time.time);
