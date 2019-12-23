@@ -44,16 +44,27 @@ public class CharacterSelection : MonoBehaviour {
                 }
             }
         }
+        /*
         for (int i=0; i<blockys.Length; i++)
         {
             Debug.Log(i);
             Debug.Log(blockys[i].transform.position);
         }
+        */
     }
 
     public void SelectCharacter() 
     {
-
+        for (int i=0; i<blockys.Length; i++)
+        {
+            if (blockys[i].transform.position.x < 5.0f && blockys[i].transform.position.x > -5.0f)
+            {
+                Game.characterNumber = i;
+                break;
+            }
+        }
+        Debug.Log(Game.characterNumber);
+        SceneManager.LoadScene("ChapterSelection");
     }
 
     public void BackToMenuButtonClicked()

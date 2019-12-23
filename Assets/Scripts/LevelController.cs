@@ -32,6 +32,7 @@ public class LevelController : MonoBehaviour {
 	public GameObject[] coins;
     public GameObject[] portals;
 	public GameObject[] diamonds;
+    public GameObject[] blockys;
 	public int scoreCoin, scoreDiamond;
 	
 	List<string> commands = new List<string>();
@@ -67,6 +68,19 @@ public class LevelController : MonoBehaviour {
 			diamond.transform.localScale = new Vector3(1f, 1f, 1f);
         foreach (var portal in portals)
             portal.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+        GameObject b = GameObject.Find("Blockys");
+        blockys = new GameObject[b.transform.childCount];
+        
+        for (int i=0; i<b.transform.childCount; i++)
+        {
+            blockys[i] = b.transform.GetChild(i).gameObject;
+        }
+        foreach (GameObject blocky in blockys)
+        {
+            blocky.SetActive(false);
+        }
+        blockys[Game.characterNumber].SetActive(true);
+        //Game.blocky = blockys[Game.characterNumber];
 	}
 
     public void Update()
