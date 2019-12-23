@@ -8,6 +8,7 @@ public class BlockyController : MonoBehaviour
 	public Rigidbody rb;
 	public string state; // { STOP, COOL, FRONT, BACK, LEFT, RIGHT, DEAD, FINISH, RESET, MENU }
 	public int direction; // { XP, ZP, XN, ZN }
+	public int characterNumber;
 	
 	readonly float timerDelay = 0.025f;
 	readonly int[] directions = {0, 90, 180, 270};
@@ -24,7 +25,7 @@ public class BlockyController : MonoBehaviour
 	
 	void Awake() 
 	{ 
-		Game.blocky = this;
+		if (Game.characterNumber == characterNumber) Game.blocky = this;
 	}
 	
 	void Start() 
@@ -76,7 +77,7 @@ public class BlockyController : MonoBehaviour
 	// Called every timer ticks
 	void TimerTick() 
 	{
-		//if (state != "SHRINK" || state != "ZOOM") Breath();
+		if (state != "SHRINK" || state != "ZOOM") Breath();
 		switch (state) 
 		{
 			case "RESET":

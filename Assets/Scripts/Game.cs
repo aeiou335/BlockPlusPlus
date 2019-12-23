@@ -12,4 +12,5 @@ public class Game
 	public static SoundController sound;
 	public static int chapterNumber = 3;
 	public static int levelNumber = 1;
+	public static int characterNumber = 0;
 }
