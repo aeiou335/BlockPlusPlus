@@ -27,6 +27,7 @@ public class LevelController : MonoBehaviour {
     //public static int currentLevel;
     public int maxLevel = 6;
     public int currentLevel;
+    public int starsCount = 1;
     public string currentLevelPrefix;
 	
 	public GameObject[] coins;
@@ -115,6 +116,19 @@ public class LevelController : MonoBehaviour {
 
     public void CompleteLevel()
     {      
+        var stars = GameObject.Find("Stars");
+        var noStars = GameObject.Find("NoStars");
+        Debug.Log("123123123123123123123");
+        Debug.Log(GameObject.Find("Stars").transform.childCount);
+        for (int i=0; i<starsCount; i++)
+        {
+            //stars.transform.GetChild(i).gameObject.SetActive(true);
+            noStars.transform.GetChild(i).gameObject.SetActive(false);
+        }
+        for (int i=starsCount; i<GameObject.Find("Stars").transform.childCount; i++)
+        {
+            stars.transform.GetChild(i).gameObject.SetActive(false);
+        }
         CompletePanel.GetComponent<Canvas>().enabled = true;
         /*
         if (Game.levelNumber+1 > PlayerPrefs.GetInt("levelAt"))
@@ -163,8 +177,8 @@ public class LevelController : MonoBehaviour {
     
     private void LoadNextScreen()
     {
-        SceneManager.LoadScene("Level" + Game.chapterNumber + '_' + Game.levelNumber);
-		Game.levelNumber += 1;
+        Game.levelNumber += 1;
+        SceneManager.LoadScene("Level" + Game.chapterNumber + '_' + Game.levelNumber);		
     }
     
     public void Score(string type)
