@@ -8,11 +8,12 @@ public class BlockyController : MonoBehaviour
 	public Rigidbody rb;
 	public string state; // { STOP, COOL, FRONT, BACK, LEFT, RIGHT, DEAD, FINISH, RESET, MENU }
 	public int direction; // { XP, ZP, XN, ZN }
+	public int characterNumber;
 	
 	readonly float timerDelay = 0.025f;
 	readonly int[] directions = {0, 90, 180, 270};
 	
-	Vector3 resetPosition, resetAngle;
+	Vector3 resetPosition, resetAngle, resetScale, newPosition;
 	int resetDirection;
 	int countDown;
 	int breathValue;
@@ -20,10 +21,11 @@ public class BlockyController : MonoBehaviour
 	bool isRunning;
 	float startHeight;
 	bool isLanded;
+	bool hasSent;
 	
 	void Awake() 
 	{ 
-		Game.blocky = this;
+		if (Game.characterNumber == characterNumber) Game.blocky = this;
 	}
 	
 	void Start() 
@@ -31,8 +33,10 @@ public class BlockyController : MonoBehaviour
 		InvokeRepeating("TimerTick", timerDelay, timerDelay);
 		var pos = transform.position;
 		var angle = transform.eulerAngles;
+		var scale = transform.localScale;
 		resetPosition = new Vector3(pos.x, pos.y, pos.z);
 		resetAngle = new Vector3(angle.x, angle.y, angle.z);
+		resetScale = new Vector3(scale.x, scale.y, scale.z);
 		foreach (var d in directions)
 			if (Mathf.Abs(Mathf.DeltaAngle(angle.y, d)) < 45)
 				resetDirection = d;
@@ -50,10 +54,12 @@ public class BlockyController : MonoBehaviour
 		rb = GetComponent<Rigidbody>();
 		transform.position = resetPosition;
 		transform.eulerAngles = resetAngle;
+		transform.localScale = resetScale;
 		direction = resetDirection;
 		rb.velocity = Vector3.zero;
 		breathValue = 1;
 		isRunning = false;
+		hasSent = false;
 		isLanded = true;
 		SetState("RESET", 50);
 	}
@@ -71,7 +77,7 @@ public class BlockyController : MonoBehaviour
 	// Called every timer ticks
 	void TimerTick() 
 	{
-		Breath();
+		if (state != "SHRINK" || state != "ZOOM") Breath();
 		switch (state) 
 		{
 			case "RESET":
@@ -85,10 +91,15 @@ public class BlockyController : MonoBehaviour
 				break;
 			case "STOP":
 				Correction();
+				if (!hasSent) 
+				{
+					DoorCollision();
+					if (hasSent) break;
+				}
 				if (isRunning) NextCommand();
 				break;
 			case "COOL":
-				 Correction();
+				Correction();
 				if (--countDown < 0) SetState("STOP", 0);
 				break;
 			case "MOVE":
@@ -98,12 +109,27 @@ public class BlockyController : MonoBehaviour
 				if (--countDown < 0) isLanded = false;
 				break;
 			case "SEND":
-				DoorCorrection();
+				DoorCollision();
 				break;
 			case "TURN":
 				if (Mathf.Abs(Mathf.DeltaAngle(transform.eulerAngles.y, direction)) > 2) 
 					transform.RotateAround(transform.position, turnAxis, timerDelay*200);
 				if (--countDown < 0) isLanded = false;
+				break;
+			case "SHRINK":
+				Correction();
+				if (--countDown < 0) { SetState("ZOOM", 20); Game.sound.play("PORTAL"); }
+				if (transform.localScale.x > 0.1f) 
+					transform.localScale -= new Vector3(0.05f, 0.05f, 0.05f);
+				else transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
+				break;
+			case "ZOOM":
+				Correction();
+				if (--countDown < 0) SetState("COOL", 30); //NextCommand();
+				if (transform.localScale.x < 0.5f) 
+					transform.localScale += new Vector3(0.05f, 0.05f, 0.05f);
+				else transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+				transform.position = newPosition;
 				break;
 			default:
 				break;
@@ -127,6 +153,7 @@ public class BlockyController : MonoBehaviour
 	{
 		if (isFrozen() || isEnded()) return;
 		isRunning = true;
+		Debug.LogFormat("<color=blue>Number of puzzles = {0}.</color>", Game.commands.PuzzlesNumber());
 	}
 	
 	// Set state
@@ -140,7 +167,7 @@ public class BlockyController : MonoBehaviour
 	// Move/Jump forward/backward 1 block
 	void Move(string dir, string mode) 
 	{
-		if (state != "STOP") return;
+		if (state != "STOP" && state != "ZOOM") return;
 		var signFront = 0;
 		var signLeft = 0;
 		if (dir == "FORWARD" || dir == "BACKWARD") 
@@ -150,8 +177,8 @@ public class BlockyController : MonoBehaviour
 			signLeft = (dir == "LEFT" ? 1 : -1);
 		}
 		//var sign = (dir == "FORWARD"? 1: -1);
-		var vx = (mode == "JUMP"? 1.5f: 2.0f); 
-		var vy = (mode == "JUMP"? 4.0f: 2.4f);
+		var vx = (mode == "JUMP"? 1.3f: 2.0f); 
+		var vy = (mode == "JUMP"? 4.5f: 2.4f);
 		switch (direction) 
 		{
 			case   0: rb.velocity = new Vector3(vx*signFront, vy, vx*signLeft); break;
@@ -211,6 +238,7 @@ public class BlockyController : MonoBehaviour
 			{
 				coin.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
 				Game.level.Score("COIN");
+				Game.sound.play("COIN");
 			}
 		foreach (var diamond in Game.level.diamonds)
 			if ((diamond.transform.position - transform.position).magnitude < 0.5 && 
@@ -222,29 +250,48 @@ public class BlockyController : MonoBehaviour
 			}
 	}
 
-	void DoorCorrection()
+	void DoorCollision()
 	{
-		Debug.Log(Game.level.portals[0].transform.position);
-		Debug.Log(Game.level.portals[1].transform.position);
-		//var new_pos = Game.level.portals[0].transform.position;
-		var old_pos = Game.blocky.transform.position;
 		foreach (var portal in Game.level.portals)
 		{
-			Debug.Log((portal.transform.position - transform.position).magnitude);
-			if ((portal.transform.position - transform.position).magnitude > 0.5 )
+			if ((portal.transform.position - transform.position).magnitude < 0.5 ) 
 			{
-				var new_pos = portal.transform.position;
-				transform.position = new Vector3(new_pos.x, old_pos.y, new_pos.z);
-				break;
+				Game.sound.play("PORTAL");
+				hasSent = true;
 			}
-		}		
-		Correction();
+		}
+		var old_pos = Game.blocky.transform.position;
+		
+		if (hasSent)
+		{
+			foreach (var portal in Game.level.portals)
+			{
+				//Debug.Log((portal.transform.position - transform.position).magnitude);	
+				if ((portal.transform.position - transform.position).magnitude > 0.5 )
+				{
+					var new_pos = portal.transform.position;
+					newPosition = new Vector3(new_pos.x, new_pos.y, new_pos.z);
+					break;
+				}
+			}
+			rb.velocity = new Vector3(0f, 0f, 0f);
+			rb.angularVelocity = new Vector3(0f, 0f, 0f);
+			SetState("SHRINK", 20);
+		}
+		
+		/*
+		foreach (var portal in Game.level.portals)
+		{
+			portal.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
+		}
+		*/
 	}
 	
 	// Do the next command
 	void NextCommand() 
 	{
 		var command = Game.commands.Next();
+		hasSent = false;
 		switch (command) 
 		{
 			case "blocky_move_forward":  Move("FORWARD", "MOVE"); break;
@@ -258,10 +305,21 @@ public class BlockyController : MonoBehaviour
 			case "<start>": break;
 			case "<stop>":
 				isRunning = false;
+				Debug.Log("End Of Commands");
 				SetState("DEAD", 50);
 				break;
 			default: break;
 		}
+		Debug.Log(command);
+		/*
+		if (command == "blocky_move_forward" || command == "blocky_move_backward" ||
+			command == "blocky_jump_forward" || command == "blocky_jump_backward" ||
+			command == "blocky_move_left" || command == "blocky_move_right")
+		{
+			Debug.Log("isSent resets.");
+			isSent = false;
+		}
+		*/
 	}
 
 	// On Collision
@@ -285,9 +343,11 @@ public class BlockyController : MonoBehaviour
 				SetState("WIN", 50);
 				Game.sound.play("WIN");
 				break;
+			/*
 			case "Door":
 				if (state == "MOVE" || state == "TURN") SetState("COOL", 10);
 				break;
+			*/
 			default:
 				Debug.Log("Collision = Others");
 				SetState("DEAD", 50);
@@ -295,15 +355,16 @@ public class BlockyController : MonoBehaviour
 		}
 	}
 	
-	
+	/*
 	void OnTriggerEnter(Collider collider) 
 	{			
-		//Debug.Log(collider.tag);
-		if (collider.tag == "Door")
+		if (collider.tag == "Door" && !isSent)
 		{
-			DoorCorrection();
+			Debug.Log(collider.tag);
+			DoorCollision();
+			isSent = true;
 		}
 		//OnCollisionEnter(collision);
 	}
-	
+	*/
 }

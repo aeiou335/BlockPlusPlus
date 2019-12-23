@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class CharacterSelection : MonoBehaviour {
     public GameObject scrollbar;
+    public GameObject[] blockys;
     float scrollPos = 0;
     float[] pos;
 
@@ -16,9 +17,9 @@ public class CharacterSelection : MonoBehaviour {
     void Update() {
         pos = new float[transform.childCount];
         float distance = 1f/ (pos.Length - 1f);
-        Debug.Log(distance);
+        //Debug.Log(distance);
         
-        Debug.Log(pos.Length);
+        //Debug.Log(pos.Length);
         for (int i=0; i<pos.Length; i++) {
             pos[i] = distance * i;
         }
@@ -38,10 +39,43 @@ public class CharacterSelection : MonoBehaviour {
                 transform.GetChild(i).localScale = Vector3.Lerp (transform.GetChild(i).localScale, new Vector3(200f, 200f, 200f), 10f);
                 for (int a=0; a<pos.Length; a++) {
                     if (a != i) {
-                        transform.GetChild(a).localScale = Vector3.Lerp(transform.GetChild(a).localScale, new Vector3(160f, 160f, 160f), 10f);
+                        transform.GetChild(a).localScale = Vector3.Lerp(transform.GetChild(a).localScale, new Vector3(120f, 120f, 120f), 10f);
                     }
                 }
             }
         }
+        /*
+        for (int i=0; i<blockys.Length; i++)
+        {
+            Debug.Log(i);
+            Debug.Log(blockys[i].transform.position);
+        }
+        */
+    }
+
+    public void SelectCharacter() 
+    {
+        for (int i=0; i<blockys.Length; i++)
+        {
+            if (blockys[i].transform.position.x < 5.0f && blockys[i].transform.position.x > -5.0f)
+            {
+                Game.characterNumber = i;
+                break;
+            }
+        }
+        Debug.Log(Game.characterNumber);
+		Invoke("_LoadMenu", 0.5f);
+		Game.sound.play("CLICK");
+    }
+
+    public void BackToMenuButtonClicked()
+    {
+		Invoke("_LoadMenu", 0.5f);
+		Game.sound.play("CLICK");
+    }
+
+    void _LoadMenu()
+    {
+        SceneManager.LoadScene("Menu");
     }
 }

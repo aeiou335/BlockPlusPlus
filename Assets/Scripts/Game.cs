@@ -10,6 +10,7 @@ public class Game
 	public static CommandsController commands;
 	public static LevelController level;
 	public static SoundController sound;
-	public static int chapterNumber = 3;
+	public static int chapterNumber = 1;
 	public static int levelNumber = 1;
+	public static int characterNumber = 0;
 }

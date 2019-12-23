@@ -89,13 +89,17 @@ namespace UBlockly
         /// </summary>
         IEnumerator RunWorkspace(Workspace workspace)
         {
+			Game.commands.Clear();
             //traverse all blocks in the workspace and run code for the blocks
             List<Block> blocks = workspace.GetTopBlocks(true);
             foreach (Block block in blocks)
             {
                 //exclude the procedure definition blocks
                 if (ProcedureDB.IsDefinition(block))
+				{
+					Game.commands.AddPuzzle(block.GetHashCode());
                     continue;
+				}
                 
                 yield return RunBlock(block);
             }
@@ -109,6 +113,8 @@ namespace UBlockly
         /// </summary>
         IEnumerator RunBlock(Block block)
         {
+			Game.commands.AddPuzzle(block.GetHashCode());
+			//Debug.LogFormat("<color=blue>RunBlock {0}</color>", block.GetHashCode());
             //check flow 
             if (ControlCmdtor.SkipRunByControlFlow(block))
             {

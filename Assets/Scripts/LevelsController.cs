@@ -28,10 +28,22 @@ public class LevelsController : MonoBehaviour {
     public void PlayButtonClicked(int level)
     {
 		Game.levelNumber = level;
-        SceneManager.LoadScene("Level" + Game.chapterNumber + "_" + Game.levelNumber);
+		Invoke("_LoadLevel", 0.5f);
+		Game.sound.play("CLICK");
     }
     
     public void BackButtonClicked()
+    {
+		Invoke("_LoadChapterSelection", 0.5f);
+		Game.sound.play("CLICK");
+    }
+
+    void _LoadLevel()
+    {
+        SceneManager.LoadScene("Level" + Game.chapterNumber + "_" + Game.levelNumber);
+    }
+
+    void _LoadChapterSelection()
     {
         SceneManager.LoadScene("ChapterSelection");
     }
