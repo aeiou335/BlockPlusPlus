@@ -91,11 +91,15 @@ public class BlockyController : MonoBehaviour
 				break;
 			case "STOP":
 				Correction();
-				if (!hasSent) DoorCorrection();
-				if (isRunning && !hasSent) NextCommand();
+				if (!hasSent) 
+				{
+					DoorCollision();
+					if (hasSent) break;
+				}
+				if (isRunning) NextCommand();
 				break;
 			case "COOL":
-				 Correction();
+				Correction();
 				if (--countDown < 0) SetState("STOP", 0);
 				break;
 			case "MOVE":
@@ -105,7 +109,7 @@ public class BlockyController : MonoBehaviour
 				if (--countDown < 0) isLanded = false;
 				break;
 			case "SEND":
-				DoorCorrection();
+				DoorCollision();
 				break;
 			case "TURN":
 				if (Mathf.Abs(Mathf.DeltaAngle(transform.eulerAngles.y, direction)) > 2) 
@@ -113,23 +117,19 @@ public class BlockyController : MonoBehaviour
 				if (--countDown < 0) isLanded = false;
 				break;
 			case "SHRINK":
-				if (--countDown < 0) SetState("ZOOM", 20);
-				if (transform.localScale.x > 0.1f) transform.localScale = transform.localScale - new Vector3(0.05f, 0.05f, 0.05f);
+				Correction();
+				if (--countDown < 0) { SetState("ZOOM", 20); Game.sound.play("PORTAL"); }
+				if (transform.localScale.x > 0.1f) 
+					transform.localScale -= new Vector3(0.05f, 0.05f, 0.05f);
 				else transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
 				break;
 			case "ZOOM":
-				if (--countDown < 0) 
-				{
-					Correction(); 
-					NextCommand();
-				}//SetState("STOP", 0);
+				Correction();
+				if (--countDown < 0) SetState("COOL", 30); //NextCommand();
 				if (transform.localScale.x < 0.5f) 
-				{
-					transform.localScale = transform.localScale + new Vector3(0.05f, 0.05f, 0.05f);
-					transform.position = newPosition;
-				}
+					transform.localScale += new Vector3(0.05f, 0.05f, 0.05f);
 				else transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
-				
+				transform.position = newPosition;
 				break;
 			default:
 				break;
@@ -238,6 +238,7 @@ public class BlockyController : MonoBehaviour
 			{
 				coin.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
 				Game.level.Score("COIN");
+				Game.sound.play("COIN");
 			}
 		foreach (var diamond in Game.level.diamonds)
 			if ((diamond.transform.position - transform.position).magnitude < 0.5 && 
@@ -249,11 +250,15 @@ public class BlockyController : MonoBehaviour
 			}
 	}
 
-	void DoorCorrection()
+	void DoorCollision()
 	{
 		foreach (var portal in Game.level.portals)
 		{
-			if ((portal.transform.position - transform.position).magnitude < 0.5 ) hasSent = true;
+			if ((portal.transform.position - transform.position).magnitude < 0.5 ) 
+			{
+				Game.sound.play("PORTAL");
+				hasSent = true;
+			}
 		}
 		var old_pos = Game.blocky.transform.position;
 		
@@ -265,7 +270,7 @@ public class BlockyController : MonoBehaviour
 				if ((portal.transform.position - transform.position).magnitude > 0.5 )
 				{
 					var new_pos = portal.transform.position;
-					newPosition = new Vector3(new_pos.x, old_pos.y, new_pos.z);
+					newPosition = new Vector3(new_pos.x, new_pos.y, new_pos.z);
 					break;
 				}
 			}
@@ -356,7 +361,7 @@ public class BlockyController : MonoBehaviour
 		if (collider.tag == "Door" && !isSent)
 		{
 			Debug.Log(collider.tag);
-			DoorCorrection();
+			DoorCollision();
 			isSent = true;
 		}
 		//OnCollisionEnter(collision);

@@ -21,7 +21,7 @@ public class LevelController : MonoBehaviour {
     public GameObject stopButton;
     public Text level;
     public Text textCoin;
-    public Text textDiamond;
+    //public Text textDiamond;
 
     public bool paused;
     //public static int currentLevel;
@@ -33,9 +33,9 @@ public class LevelController : MonoBehaviour {
     public GameObject[] portals;
 	public GameObject[] diamonds;
     public GameObject[] blockys;
-	public int scoreCoin, scoreDiamond;
+	public int scoreCoin;//, scoreDiamond;
 	
-	List<string> commands = new List<string>();
+	//List<string> commands = new List<string>();
 	
 	void Awake() 
 	{ 
@@ -54,9 +54,9 @@ public class LevelController : MonoBehaviour {
 	void Reset() 
 	{
 		scoreCoin = 0;
-		scoreDiamond = 0;
+		//scoreDiamond = 0;
 		textCoin.text = "x 0";
-		textDiamond.text = "x 0";
+		//textDiamond.text = "x 0";
 		EnableRunButton();
         workspace.GetComponent<Canvas>().enabled = false;
         playPanel.GetComponent<Canvas>().enabled = true;
@@ -66,8 +66,8 @@ public class LevelController : MonoBehaviour {
 			coin.transform.localScale = new Vector3(1f, 1f, 1f);
 		foreach (var diamond in diamonds)
 			diamond.transform.localScale = new Vector3(1f, 1f, 1f);
-        foreach (var portal in portals)
-            portal.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+        //foreach (var portal in portals)
+        //    portal.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
         GameObject b = GameObject.Find("Blockys");
         blockys = new GameObject[b.transform.childCount];
         
@@ -131,48 +131,36 @@ public class LevelController : MonoBehaviour {
 
     public void Restart()
     {
-        //fadeOutPanel.SetActive(true);
         Game.blocky.Reset();
 		Game.camera.Reset();
 		Reset();
+		Game.sound.play("CLICK");
     }
-
-    private void ReloadScreen()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
+	
     public void NextLevel()
     {
         if (Game.levelNumber == maxLevel) {
-            Invoke("LoadEndScreen", 1);
+            Invoke("_LoadChapter", 0.5f);
+			Game.sound.play("CLICK");
         }
         else {
-            Invoke("LoadNextScreen", 1);
+            Invoke("_LoadNextLevel", 0.5f);
+			Game.sound.play("CLICK");
         }        
     }
 
     public void BackToMenu()
     {
-        SceneManager.LoadScene("Menu");
-    }
-    private void LoadEndScreen()
-    {
-        SceneManager.LoadScene("EndMenu");
-    }
-    
-    private void LoadNextScreen()
-    {
-        SceneManager.LoadScene("Level" + Game.chapterNumber + '_' + Game.levelNumber);
-		Game.levelNumber += 1;
+		Invoke("_LoadChapter", 0.5f);
+		Game.sound.play("CLICK");
     }
     
     public void Score(string type)
     {
 		if (type == "COIN") scoreCoin += 1;
-		if (type == "DIAMOND") scoreDiamond += 1;
+		//if (type == "DIAMOND") scoreDiamond += 1;
 		textCoin.text = "x " + scoreCoin;
-		textDiamond.text = "x " + scoreDiamond;
+		//textDiamond.text = "x " + scoreDiamond;
     }
 	
 	// Zoom in button clicked
@@ -192,18 +180,21 @@ public class LevelController : MonoBehaviour {
 	{
 		workspace.GetComponent<Canvas>().enabled ^= true;
 		playPanel.GetComponent<Canvas>().enabled ^= true;
+		Game.sound.play("CLICK");
 	}
 	
 	// Stop button clicked
 	public void OnStopClicked() 
 	{
 		Restart();
+		Game.sound.play("CLICK");
 	}
 	
 	// Quit button clicked
     public void OnQuitClicked()
     {
-        SceneManager.LoadScene("Chapter");
+		Invoke("_LoadChapter", 0.5f);
+		Game.sound.play("CLICK");
     }
 	
 	// Enable run button
@@ -220,4 +211,20 @@ public class LevelController : MonoBehaviour {
 		stopButton.GetComponent<Button>().interactable = true;
 	}
     
+    void _LoadNextLevel()
+    {
+		Game.levelNumber += 1;
+        SceneManager.LoadScene("Level" + Game.chapterNumber + '_' + Game.levelNumber);
+    }
+	
+	void _LoadMenu()
+    {
+        SceneManager.LoadScene("Menu");
+    }
+
+    void _LoadChapter()
+    {
+        SceneManager.LoadScene("Chapter");
+    }
+	
 }

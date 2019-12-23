@@ -64,10 +64,17 @@ public class CharacterSelection : MonoBehaviour {
             }
         }
         Debug.Log(Game.characterNumber);
-        SceneManager.LoadScene("ChapterSelection");
+		Invoke("_LoadMenu", 0.5f);
+		Game.sound.play("CLICK");
     }
 
     public void BackToMenuButtonClicked()
+    {
+		Invoke("_LoadMenu", 0.5f);
+		Game.sound.play("CLICK");
+    }
+
+    void _LoadMenu()
     {
         SceneManager.LoadScene("Menu");
     }

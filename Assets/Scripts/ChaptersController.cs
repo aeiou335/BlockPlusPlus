@@ -47,10 +47,22 @@ public class ChaptersController : MonoBehaviour
     {   
         Debug.Log(chapter);
         Game.chapterNumber = chapter;
-        SceneManager.LoadScene("Chapter");
+		Invoke("_LoadChapter", 0.5f);
+		Game.sound.play("CLICK");
     }
 
     public void BackToMenuButtonClicked()
+    {
+		Invoke("_LoadMenu", 0.5f);
+		Game.sound.play("CLICK");
+    }
+
+    void _LoadChapter()
+    {
+        SceneManager.LoadScene("Chapter");
+    }
+
+    void _LoadMenu()
     {
         SceneManager.LoadScene("Menu");
     }

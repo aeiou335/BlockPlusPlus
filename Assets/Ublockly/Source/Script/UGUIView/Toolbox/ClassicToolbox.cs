@@ -67,6 +67,7 @@ namespace UBlockly.UGUI
         public void ShowBlockCategory(string categoryName)
         {
 			Debug.Log("ShowBlockCategory");
+			Game.sound.play("CLICK");
             if (string.Equals(categoryName, mActiveCategory))
                 return;
          

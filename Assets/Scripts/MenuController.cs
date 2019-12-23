@@ -30,10 +30,22 @@ public class MenuController : MonoBehaviour
 
     public void ChapterSelectionButtonClicked()
     {   
-        SceneManager.LoadScene("ChapterSelection");
+		Invoke("_LoadChapterSelection", 0.5f);
+		Game.sound.play("CLICK");
     }
 
     public void CharacterSelectionButtonClicked()
+    {
+		Invoke("_LoadCharacterSelection", 0.5f);
+		Game.sound.play("CLICK");
+    }
+
+    public void _LoadChapterSelection()
+    {
+        SceneManager.LoadScene("ChapterSelection");
+    }
+
+    public void _LoadCharacterSelection()
     {
         SceneManager.LoadScene("CharacterSelection");
     }
