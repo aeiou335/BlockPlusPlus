@@ -78,9 +78,9 @@ public class LevelController : MonoBehaviour {
         foreach (var key in keys)
 			key.transform.localScale = new Vector3(1f, 1f, 1f);
         foreach (var door in doors)
-            door.transform.localScale = new Vector3(1f, 1f, 1f);
-        //foreach (var portal in portals)
-        //    portal.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+            door.SetActive(true);
+        foreach (var portal in portals)
+            portal.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
         GameObject b = GameObject.Find("Blockys");
         blockys = new GameObject[b.transform.childCount];
         
