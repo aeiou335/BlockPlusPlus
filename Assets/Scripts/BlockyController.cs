@@ -275,12 +275,20 @@ public class BlockyController : MonoBehaviour
 			case 180: expectedDoorPosition = new Vector3(pos.x-1, pos.y, pos.z); break;
 			case 270: expectedDoorPosition = new Vector3(pos.x, pos.y, pos.z+1); break;
 		}
-		foreach (var door in Game.level.doors)
+		foreach (var doorClosed in Game.level.doorsClosed)
 		{
-			if ((door.transform.position - expectedDoorPosition).magnitude < 0.5) 
+			if ((doorClosed.transform.position - expectedDoorPosition).magnitude < 0.5) 
 			{
 				//door.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
-				door.SetActive(false);
+				doorClosed.SetActive(false);
+				Game.sound.play("DOOR");
+				foreach (var door in Game.level.doors)
+				{
+					if ((door.transform.position - expectedDoorPosition).magnitude < 0.5) 
+					{
+						door.SetActive(true);
+					}
+				}
 				return true;
 			}
 		}

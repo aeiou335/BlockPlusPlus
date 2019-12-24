@@ -17,7 +17,7 @@ public class SoundController : MonoBehaviour {
 			"win", "connect", "delete", "play", 
 			"portal1", "portal2", "portal3",
 			"click1", "click2", "click3", 
-			"coin1", "coin2", "coin3"
+			"coin1", "coin2", "coin3", "door"
 		};
 	}
 	
@@ -35,6 +35,7 @@ public class SoundController : MonoBehaviour {
 			case "PORTAL": _play("portal" + random23); break;
 			case "CLICK": _play("click" + random123); break;
 			case "COIN": _play("coin" + random123); break;
+			case "DOOR": _play("door"); break;
 			default: break;
 		}
 	}
