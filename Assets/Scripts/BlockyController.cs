@@ -121,11 +121,14 @@ public class BlockyController : MonoBehaviour
 				if (--countDown < 0) { SetState("ZOOM", 20); Game.sound.play("PORTAL"); }
 				if (transform.localScale.x > 0.1f) 
 					transform.localScale -= new Vector3(0.05f, 0.05f, 0.05f);
-				else transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
+				else {
+					transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);					
+				}
 				break;
 			case "ZOOM":
-				Correction();
-				if (--countDown < 0) SetState("COOL", 30); //NextCommand();
+				//Correction();
+				Debug.Log(transform.position);
+				if (--countDown < 0) SetState("COOL", 10); //NextCommand();
 				if (transform.localScale.x < 0.5f) 
 					transform.localScale += new Vector3(0.05f, 0.05f, 0.05f);
 				else transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
@@ -272,11 +275,20 @@ public class BlockyController : MonoBehaviour
 			case 180: expectedDoorPosition = new Vector3(pos.x-1, pos.y, pos.z); break;
 			case 270: expectedDoorPosition = new Vector3(pos.x, pos.y, pos.z+1); break;
 		}
-		foreach (var door in Game.level.doors)
+		foreach (var doorClosed in Game.level.doorsClosed)
 		{
-			if ((door.transform.position - expectedDoorPosition).magnitude < 0.5) 
+			if ((doorClosed.transform.position - expectedDoorPosition).magnitude < 0.5) 
 			{
-				door.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
+				//door.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
+				doorClosed.SetActive(false);
+				Game.sound.play("DOOR");
+				foreach (var door in Game.level.doors)
+				{
+					if ((door.transform.position - expectedDoorPosition).magnitude < 0.5) 
+					{
+						door.SetActive(true);
+					}
+				}
 				return true;
 			}
 		}
@@ -314,6 +326,8 @@ public class BlockyController : MonoBehaviour
 				if ((portal.transform.position - transform.position).magnitude > 0.5 )
 				{
 					var new_pos = portal.transform.position;
+					Debug.Log(new_pos);
+					Debug.Log(transform.position);
 					newPosition = new Vector3(new_pos.x, new_pos.y, new_pos.z);
 					break;
 				}

@@ -42,20 +42,6 @@
     "colour": "290"
   },
   {
-    "type": "blocky_move_left",
-    "message0": "Move Left",
-    "previousStatement": null,
-    "nextStatement": null,
-    "colour": "290"
-  },
-  {
-    "type": "blocky_move_right",
-    "message0": "Move Right",
-    "previousStatement": null,
-    "nextStatement": null,
-    "colour": "290"
-  },
-  {
     "type": "blocky_open_door",
     "message0": "Open Door",
     "previousStatement": null,

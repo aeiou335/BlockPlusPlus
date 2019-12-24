@@ -37,6 +37,7 @@ public class LevelController : MonoBehaviour {
 	public GameObject[] diamonds;
     public GameObject[] keys;
     public GameObject[] doors;
+    public GameObject[] doorsClosed;
     public GameObject[] blockys;
 	public int scoreCoin, keyCount;//, scoreDiamond;
 	
@@ -54,6 +55,7 @@ public class LevelController : MonoBehaviour {
 		diamonds = GameObject.FindGameObjectsWithTag("Diamond");
         keys = GameObject.FindGameObjectsWithTag("Key");
         doors = GameObject.FindGameObjectsWithTag("Door");
+        doorsClosed = GameObject.FindGameObjectsWithTag("DoorClosed");
         portals = GameObject.FindGameObjectsWithTag("Portal");
 		Reset();
     }
@@ -78,9 +80,11 @@ public class LevelController : MonoBehaviour {
         foreach (var key in keys)
 			key.transform.localScale = new Vector3(1f, 1f, 1f);
         foreach (var door in doors)
-            door.transform.localScale = new Vector3(1f, 1f, 1f);
-        //foreach (var portal in portals)
-        //    portal.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+            door.SetActive(false);
+        foreach (var door in doorsClosed)
+            door.SetActive(true);
+        foreach (var portal in portals)
+            portal.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
         GameObject b = GameObject.Find("Blockys");
         blockys = new GameObject[b.transform.childCount];
         
