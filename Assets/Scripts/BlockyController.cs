@@ -84,6 +84,7 @@ public class BlockyController : MonoBehaviour
 				if (--countDown < 0) SetState("STOP", 0);
 				break;
 			case "WIN":
+				Correction();
 				if (--countDown < 0) { SetState("END", 0); Game.level.CompleteLevel(); }
 				break;
 			case "DEAD":
