@@ -28,6 +28,8 @@ public class LevelController : MonoBehaviour {
     //public static int currentLevel;
     public int maxLevel = 6;
     public int currentLevel;
+    public int starsCount = 1;
+    public int expectedPuzzlesNumber;
     public string currentLevelPrefix;
 	
 	public GameObject[] coins;
@@ -60,6 +62,7 @@ public class LevelController : MonoBehaviour {
 	{
 		scoreCoin = 0;
 		//scoreDiamond = 0;
+        starsCount = 1;
 		textCoin.text = "x 0";
         textKey.text = "x 0";
 		//textDiamond.text = "x 0";
@@ -125,6 +128,25 @@ public class LevelController : MonoBehaviour {
 
     public void CompleteLevel()
     {      
+        if (Game.commands.PuzzlesNumber() <= expectedPuzzlesNumber) starsCount += 1;
+        if (coins.Length == scoreCoin) starsCount += 1;
+        //Debug.Log(starsCount);
+        //Debug.Log(GameObject.Find("Coins").transform.childCount);
+        //Debug.Log(scoreCoin);
+        //Debug.Log(Game.commands.PuzzlesNumber());
+        //Debug.Log(expectedPuzzlesNumber);
+        var stars = GameObject.Find("Stars");
+        var noStars = GameObject.Find("NoStars");
+        for (int i=0; i<starsCount; i++)
+        {
+            stars.transform.GetChild(i).gameObject.SetActive(true);
+            noStars.transform.GetChild(i).gameObject.SetActive(false);
+        }
+        for (int i=starsCount; i<GameObject.Find("Stars").transform.childCount; i++)
+        {
+            stars.transform.GetChild(i).gameObject.SetActive(false);
+            noStars.transform.GetChild(i).gameObject.SetActive(true);
+        }
         CompletePanel.GetComponent<Canvas>().enabled = true;
         /*
         if (Game.levelNumber+1 > PlayerPrefs.GetInt("levelAt"))
@@ -163,6 +185,19 @@ public class LevelController : MonoBehaviour {
     {
 		Invoke("_LoadChapter", 0.5f);
 		Game.sound.play("CLICK");
+
+        SceneManager.LoadScene("Menu");
+    }
+    private void LoadEndScreen()
+    {
+        SceneManager.LoadScene("EndMenu");
+    }
+    
+    private void LoadNextScreen()
+    {
+        Game.levelNumber += 1;
+        SceneManager.LoadScene("Level" + Game.chapterNumber + '_' + Game.levelNumber);		
+
     }
     
     public void Score(string type)
