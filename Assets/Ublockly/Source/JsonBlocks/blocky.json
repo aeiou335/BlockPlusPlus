@@ -54,5 +54,12 @@
     "previousStatement": null,
     "nextStatement": null,
     "colour": "290"
+  },
+  {
+    "type": "blocky_open_door",
+    "message0": "Open Door",
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": "290"
   }
 ]

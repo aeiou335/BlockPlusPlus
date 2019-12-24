@@ -36,10 +36,10 @@ public class CharacterSelection : MonoBehaviour {
 
         for (int i=0; i<pos.Length; i++) {
             if (scrollPos < pos[i] + (distance / 2) && scrollPos > pos[i] - (distance / 2)) {
-                transform.GetChild(i).localScale = Vector3.Lerp (transform.GetChild(i).localScale, new Vector3(200f, 200f, 200f), 10f);
+                transform.GetChild(i).localScale = Vector3.Lerp (transform.GetChild(i).localScale, new Vector3(250f, 250f, 250f), 10f);
                 for (int a=0; a<pos.Length; a++) {
                     if (a != i) {
-                        transform.GetChild(a).localScale = Vector3.Lerp(transform.GetChild(a).localScale, new Vector3(120f, 120f, 120f), 10f);
+                        transform.GetChild(a).localScale = Vector3.Lerp(transform.GetChild(a).localScale, new Vector3(175f, 175f, 175f), 10f);
                     }
                 }
             }
@@ -60,6 +60,7 @@ public class CharacterSelection : MonoBehaviour {
             if (blockys[i].transform.position.x < 5.0f && blockys[i].transform.position.x > -5.0f)
             {
                 Game.characterNumber = i;
+                Debug.Log(i);
                 break;
             }
         }

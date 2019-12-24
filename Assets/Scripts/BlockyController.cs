@@ -131,6 +131,9 @@ public class BlockyController : MonoBehaviour
 				else transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
 				transform.position = newPosition;
 				break;
+			case "OPEN":
+				if (--countDown < 0) SetState("COOL", 10);
+				break;
 			default:
 				break;
 		}
@@ -248,6 +251,47 @@ public class BlockyController : MonoBehaviour
 				SetState("WIN", 50);
 				Game.sound.play("WIN");
 			}
+		foreach (var key in Game.level.keys)
+			if ((key.transform.position - transform.position).magnitude < 0.5 && 
+				key.transform.localScale.magnitude > 1)
+			{
+				key.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
+				Game.level.Score("KEY");
+				Game.sound.play("COIN");
+			}
+	}
+
+	bool hasDoor()
+	{
+		Vector3 expectedDoorPosition = new Vector3(0.0f, 0.0f, 0.0f);
+		Vector3 pos = transform.position;
+		switch (direction) 
+		{
+			case   0: expectedDoorPosition = new Vector3(pos.x+1, pos.y, pos.z); break;
+			case  90: expectedDoorPosition = new Vector3(pos.x, pos.y, pos.z-1); break;
+			case 180: expectedDoorPosition = new Vector3(pos.x-1, pos.y, pos.z); break;
+			case 270: expectedDoorPosition = new Vector3(pos.x, pos.y, pos.z+1); break;
+		}
+		foreach (var door in Game.level.doors)
+		{
+			if ((door.transform.position - expectedDoorPosition).magnitude < 0.5) 
+			{
+				door.transform.localScale = new Vector3(0.0f, 0.0f, 0.0f);
+				return true;
+			}
+		}
+		return false;
+	}
+	void Open()
+	{
+		//rb.velocity = new Vector3(0f, 5f, 0f);
+		if (Game.level.keyCount > 0 && hasDoor())
+		{
+			Game.level.Open("KEY");
+		} 
+		rb.velocity = new Vector3(0.0f, 3.0f, 0.0f);
+		SetState("OPEN", 30);
+		//Game.sound.play("JUMP");
 	}
 
 	void DoorCollision()
@@ -302,6 +346,7 @@ public class BlockyController : MonoBehaviour
 			case "blocky_jump_backward": Move("BACKWARD", "JUMP"); break;
 			case "blocky_move_left": Move("LEFT", "MOVE"); break;
 			case "blocky_move_right": Move("RIGHT", "MOVE"); break;
+			case "blocky_open_door": Open(); break;
 			case "<start>": break;
 			case "<stop>":
 				isRunning = false;

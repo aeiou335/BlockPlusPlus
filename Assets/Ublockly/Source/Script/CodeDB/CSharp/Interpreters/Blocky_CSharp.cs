@@ -111,4 +111,14 @@ namespace UBlockly
 			Game.commands.Add("blocky_move_right");
         }
     }
+
+    [CodeInterpreter(BlockType = "blocky_open_door")]
+    public class Blocky_Open_Door_Cmdtor : EnumeratorCmdtor
+    {
+        protected override IEnumerator Execute(Block block)
+        {
+			yield return null;
+			Game.commands.Add("blocky_open_door");
+        }
+    }
 }

@@ -21,6 +21,7 @@ public class LevelController : MonoBehaviour {
     public GameObject stopButton;
     public Text level;
     public Text textCoin;
+    public Text textKey;
     //public Text textDiamond;
 
     public bool paused;
@@ -32,8 +33,10 @@ public class LevelController : MonoBehaviour {
 	public GameObject[] coins;
     public GameObject[] portals;
 	public GameObject[] diamonds;
+    public GameObject[] keys;
+    public GameObject[] doors;
     public GameObject[] blockys;
-	public int scoreCoin;//, scoreDiamond;
+	public int scoreCoin, keyCount;//, scoreDiamond;
 	
 	//List<string> commands = new List<string>();
 	
@@ -47,7 +50,9 @@ public class LevelController : MonoBehaviour {
         level.text = "Level " + Game.chapterNumber + "-" + Game.levelNumber;
 		coins = GameObject.FindGameObjectsWithTag("Coin");
 		diamonds = GameObject.FindGameObjectsWithTag("Diamond");
-        portals = GameObject.FindGameObjectsWithTag("Door");
+        keys = GameObject.FindGameObjectsWithTag("Key");
+        doors = GameObject.FindGameObjectsWithTag("Door");
+        portals = GameObject.FindGameObjectsWithTag("Portal");
 		Reset();
     }
 	
@@ -56,6 +61,7 @@ public class LevelController : MonoBehaviour {
 		scoreCoin = 0;
 		//scoreDiamond = 0;
 		textCoin.text = "x 0";
+        textKey.text = "x 0";
 		//textDiamond.text = "x 0";
 		EnableRunButton();
         workspace.GetComponent<Canvas>().enabled = false;
@@ -66,6 +72,10 @@ public class LevelController : MonoBehaviour {
 			coin.transform.localScale = new Vector3(1f, 1f, 1f);
 		foreach (var diamond in diamonds)
 			diamond.transform.localScale = new Vector3(1f, 1f, 1f);
+        foreach (var key in keys)
+			key.transform.localScale = new Vector3(1f, 1f, 1f);
+        foreach (var door in doors)
+            door.transform.localScale = new Vector3(1f, 1f, 1f);
         //foreach (var portal in portals)
         //    portal.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
         GameObject b = GameObject.Find("Blockys");
@@ -158,9 +168,17 @@ public class LevelController : MonoBehaviour {
     public void Score(string type)
     {
 		if (type == "COIN") scoreCoin += 1;
+        if (type == "KEY") keyCount += 1;
 		//if (type == "DIAMOND") scoreDiamond += 1;
 		textCoin.text = "x " + scoreCoin;
+        textKey.text = "x " + keyCount;
 		//textDiamond.text = "x " + scoreDiamond;
+    }
+
+    public void Open(string type)
+    {
+        if (type == "KEY") keyCount -= 1;
+        textKey.text = "x " + keyCount;
     }
 	
 	// Zoom in button clicked

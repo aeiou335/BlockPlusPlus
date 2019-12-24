@@ -69,5 +69,11 @@ namespace UBlockly
         {
             return "blocky_move_right";
         }
+
+        [CodeGenerator(BlockType = "blocky_open_door")]
+        private string Blocky_Open_Door(Block block)
+        {
+            return "blocky_open_door";
+        }
     }
 }
