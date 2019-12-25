@@ -78,7 +78,7 @@ public class LevelController : MonoBehaviour {
 		foreach (var diamond in diamonds)
 			diamond.transform.localScale = new Vector3(1f, 1f, 1f);
         foreach (var key in keys)
-			key.transform.localScale = new Vector3(1f, 1f, 1f);
+			key.transform.localScale = new Vector3(2f, 2f, 2f);
         foreach (var door in doors)
             door.SetActive(false);
         foreach (var door in doorsClosed)
