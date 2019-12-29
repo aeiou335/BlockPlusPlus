@@ -13,5 +13,5 @@ public class Game
 	public static int chapterNumber = 1;
 	public static int levelNumber = 1;
 	public static int characterNumber = 0;
-	public readonly static bool forVideo = true;
+	public readonly static bool forVideo = false;
 }
