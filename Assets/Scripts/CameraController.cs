@@ -7,6 +7,7 @@ public class CameraController : MonoBehaviour
 	//readonly Vector3 positionReset = new Vector3(-10f, 10f, -10f);
 	//readonly Vector3 targetPositionReset = new Vector3(3.5f, 2.0f, 1.0f);
 	readonly Vector3 positionReset = new Vector3(-15f, 15f, -15f);
+	readonly Vector3 positionVideoReset = new Vector3(-4f, 4f, -4f);
 	readonly Vector3 targetPositionReset = new Vector3(5f, 5f, 2f);
 	readonly float speed = 3f;
 	
@@ -35,10 +36,22 @@ public class CameraController : MonoBehaviour
 		lastDistance = -1;
 		transform.position = positionReset + lookPosition;
 		targetPosition = targetPositionReset + lookPosition;
+		if (Game.forVideo) 
+		{
+			transform.position = positionVideoReset + lookPosition;
+		}
 	}
 	
 	void Update() 
 	{
+		// keep camera rotation for video recording
+		if (Game.forVideo) 
+		{
+			transform.LookAt(lookPosition);
+			transform.RotateAround(lookPosition, Vector3.up, 1);
+			return;
+		}
+		
 		// keep following target's position
 		transform.LookAt(lookPosition);
 		transform.position += (targetPosition-transform.position)*0.1f;

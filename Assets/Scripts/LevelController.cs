@@ -61,7 +61,7 @@ public class LevelController : MonoBehaviour {
     }
 	
 	void Reset() 
-	{
+	{	
 		scoreCoin = 0;
 		//scoreDiamond = 0;
         starsCount = 1;
@@ -98,6 +98,17 @@ public class LevelController : MonoBehaviour {
         }
         blockys[Game.characterNumber].SetActive(true);
         //Game.blocky = blockys[Game.characterNumber];
+		
+		// hide all UI buttons/texts for video
+		if (Game.forVideo)
+		{
+			workspace.GetComponent<Canvas>().enabled = false;
+			playPanel.GetComponent<Canvas>().enabled = false;
+			CompletePanel.GetComponent<Canvas>().enabled = false;
+			LosePanel.GetComponent<Canvas>().enabled = false;
+			Invoke("_LoadChapter", 8f);
+			return;
+		}
 	}
 
     public void Update()
