@@ -99,8 +99,8 @@ public class LevelController : MonoBehaviour {
         blockys[Game.characterNumber].SetActive(true);
         //Game.blocky = blockys[Game.characterNumber];
 		
-		// hide all UI buttons/texts for video
-		if (Game.forVideo)
+		// hide all UI buttons/texts for showing levels
+		if (Game.mode == "LEVELS") 
 		{
 			workspace.GetComponent<Canvas>().enabled = false;
 			playPanel.GetComponent<Canvas>().enabled = false;
