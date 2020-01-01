@@ -7,12 +7,13 @@ public class CameraController : MonoBehaviour
 	//readonly Vector3 positionReset = new Vector3(-10f, 10f, -10f);
 	//readonly Vector3 targetPositionReset = new Vector3(3.5f, 2.0f, 1.0f);
 	readonly Vector3 positionReset = new Vector3(-15f, 15f, -15f);
+	readonly Vector3 positionVideoReset = new Vector3(-4f, 4f, -4f);
 	readonly Vector3 targetPositionReset = new Vector3(5f, 5f, 2f);
 	readonly float speed = 3f;
 	
 	Vector3 targetPosition;
 	Vector3 lookPosition;
-	//Vector3 lookPositionLast;
+	Vector3 lookPositionLast;
 	float lastDistance;
 	
 	void Awake() 
@@ -32,6 +33,17 @@ public class CameraController : MonoBehaviour
 	
 	public void Reset() 
 	{
+		if (Game.mode == "VIDEO1") 
+		{
+			transform.position = positionVideoReset + lookPosition;
+		}
+		if (Game.mode == "VIDEO2") 
+		{
+			//lookPosition = new Vector3(1e9f, 1e9f, 1e9f);
+			//lookPositionLast = new Vector3(1e9f, 1e9f, 1e9f);
+			lookPosition = Game.blocky.transform.position;
+			lookPositionLast = lookPosition;
+		}
 		lastDistance = -1;
 		transform.position = positionReset + lookPosition;
 		targetPosition = targetPositionReset + lookPosition;
@@ -39,7 +51,25 @@ public class CameraController : MonoBehaviour
 	
 	void Update() 
 	{
-		// keep following target's position
+		// rotation, position
+		if (Game.mode == "VIDEO1") 
+		{
+			transform.LookAt(lookPosition);
+			transform.RotateAround(lookPosition, Vector3.up, 1);
+			return;
+		}
+		if (Game.mode == "VIDEO2") 
+		{
+			/*if (lookPosition.x >= 1e8f)
+			{
+				lookPosition = Game.blocky.transform.position;
+				lookPositionLast = Game.blocky.transform.position;
+				targetPosition = targetPositionReset + lookPosition;
+			}*/
+			lookPosition = Game.blocky.transform.position;
+			targetPosition += (lookPosition-lookPositionLast);
+			lookPositionLast = lookPosition;
+		}
 		transform.LookAt(lookPosition);
 		transform.position += (targetPosition-transform.position)*0.1f;
 		

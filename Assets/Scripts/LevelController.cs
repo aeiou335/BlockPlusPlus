@@ -61,7 +61,7 @@ public class LevelController : MonoBehaviour {
     }
 	
 	void Reset() 
-	{
+	{	
 		scoreCoin = 0;
 		//scoreDiamond = 0;
         starsCount = 1;
@@ -78,7 +78,7 @@ public class LevelController : MonoBehaviour {
 		foreach (var diamond in diamonds)
 			diamond.transform.localScale = new Vector3(1f, 1f, 1f);
         foreach (var key in keys)
-			key.transform.localScale = new Vector3(1f, 1f, 1f);
+			key.transform.localScale = new Vector3(2f, 2f, 2f);
         foreach (var door in doors)
             door.SetActive(false);
         foreach (var door in doorsClosed)
@@ -98,6 +98,17 @@ public class LevelController : MonoBehaviour {
         }
         blockys[Game.characterNumber].SetActive(true);
         //Game.blocky = blockys[Game.characterNumber];
+		
+		// hide all UI buttons/texts for video
+		if (Game.mode == "VIDEO1") 
+		{
+			workspace.GetComponent<Canvas>().enabled = false;
+			playPanel.GetComponent<Canvas>().enabled = false;
+			CompletePanel.GetComponent<Canvas>().enabled = false;
+			LosePanel.GetComponent<Canvas>().enabled = false;
+			Invoke("_LoadChapter", 8f);
+			return;
+		}
 	}
 
     public void Update()
