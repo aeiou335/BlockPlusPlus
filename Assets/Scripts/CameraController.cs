@@ -33,11 +33,11 @@ public class CameraController : MonoBehaviour
 	
 	public void Reset() 
 	{
-		if (Game.mode == "LEVELS") 
+		if (Game.mode == "VIDEO1") 
 		{
 			transform.position = positionVideoReset + lookPosition;
 		}
-		if (Game.mode == "MUTE") 
+		if (Game.mode == "VIDEO2") 
 		{
 			//lookPosition = new Vector3(1e9f, 1e9f, 1e9f);
 			//lookPositionLast = new Vector3(1e9f, 1e9f, 1e9f);
@@ -52,13 +52,13 @@ public class CameraController : MonoBehaviour
 	void Update() 
 	{
 		// rotation, position
-		if (Game.mode == "LEVELS") 
+		if (Game.mode == "VIDEO1") 
 		{
 			transform.LookAt(lookPosition);
 			transform.RotateAround(lookPosition, Vector3.up, 1);
 			return;
 		}
-		if (Game.mode == "MUTE") 
+		if (Game.mode == "VIDEO2") 
 		{
 			/*if (lookPosition.x >= 1e8f)
 			{
@@ -67,15 +67,11 @@ public class CameraController : MonoBehaviour
 				targetPosition = targetPositionReset + lookPosition;
 			}*/
 			lookPosition = Game.blocky.transform.position;
-			transform.LookAt(lookPosition);
 			targetPosition += (lookPosition-lookPositionLast);
 			lookPositionLast = lookPosition;
-			transform.position += (targetPosition-transform.position)*0.1f;
 		}
-		if (Game.mode == "GAME")
-		{
-			transform.LookAt(lookPosition);
-		}
+		transform.LookAt(lookPosition);
+		transform.position += (targetPosition-transform.position)*0.1f;
 		
 		try 
 		{
