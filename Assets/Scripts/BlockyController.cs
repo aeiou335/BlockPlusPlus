@@ -309,28 +309,84 @@ public class BlockyController : MonoBehaviour
 
 	void DoorCollision()
 	{
+		var portalIdx = -1;
 		foreach (var portal in Game.level.portals)
 		{
 			if ((portal.transform.position - transform.position).magnitude < 0.5 ) 
 			{
 				Game.sound.play("PORTAL");
+				Debug.Log("000000");
+				portalIdx = 0;
+				hasSent = true;
+			}
+		}
+		foreach (var portal1 in Game.level.portals1)
+		{
+			if ((portal1.transform.position - transform.position).magnitude < 0.5 ) 
+			{
+				Game.sound.play("PORTAL");
+				portalIdx = 1;
+				Debug.Log("111111");
+				hasSent = true;
+			}
+		}
+		foreach (var portal2 in Game.level.portals2)
+		{
+			if ((portal2.transform.position - transform.position).magnitude < 0.5 ) 
+			{
+				Game.sound.play("PORTAL");
+				portalIdx = 2;
+				Debug.Log("2222222");
 				hasSent = true;
 			}
 		}
 		var old_pos = Game.blocky.transform.position;
-		
 		if (hasSent)
 		{
-			foreach (var portal in Game.level.portals)
+			if (portalIdx == 0)
 			{
-				//Debug.Log((portal.transform.position - transform.position).magnitude);	
-				if ((portal.transform.position - transform.position).magnitude > 0.5 )
+				foreach (var portal in Game.level.portals)
 				{
-					var new_pos = portal.transform.position;
-					Debug.Log(new_pos);
-					Debug.Log(transform.position);
-					newPosition = new Vector3(new_pos.x, new_pos.y, new_pos.z);
-					break;
+					//Debug.Log((portal.transform.position - transform.position).magnitude);	
+					if ((portal.transform.position - transform.position).magnitude > 0.5 )
+					{
+						var new_pos = portal.transform.position;
+						//Debug.Log(new_pos);
+						//Debug.Log(transform.position);
+						newPosition = new Vector3(new_pos.x, new_pos.y, new_pos.z);
+						break;
+					}
+				}
+			}
+			
+			else if (portalIdx == 1)
+			{
+				foreach (var portal1 in Game.level.portals1)
+				{
+					//Debug.Log((portal.transform.position - transform.position).magnitude);	
+					if ((portal1.transform.position - transform.position).magnitude > 0.5 )
+					{
+						var new_pos = portal1.transform.position;
+						//Debug.Log(new_pos);
+						//Debug.Log(transform.position);
+						newPosition = new Vector3(new_pos.x, new_pos.y, new_pos.z);
+						break;
+					}
+				}
+			}
+			else if (portalIdx == 2)
+			{
+				foreach (var portal2 in Game.level.portals2)
+				{
+					//Debug.Log((portal.transform.position - transform.position).magnitude);	
+					if ((portal2.transform.position - transform.position).magnitude > 0.5 )
+					{
+						var new_pos = portal2.transform.position;
+						//Debug.Log(new_pos);
+						//Debug.Log(transform.position);
+						newPosition = new Vector3(new_pos.x, new_pos.y, new_pos.z);
+						break;
+					}
 				}
 			}
 			rb.velocity = new Vector3(0f, 0f, 0f);
