@@ -150,8 +150,12 @@ public class LevelController : MonoBehaviour {
 
     public void CompleteLevel()
     {      
-        if (Game.commands.PuzzlesNumber() <= expectedPuzzlesNumber) starsCount += 1;
-        if (coins.Length == scoreCoin) starsCount += 1;
+        if (coins.Length == scoreCoin)
+        {
+            starsCount += 1;
+            if (Game.commands.PuzzlesNumber() <= expectedPuzzlesNumber) starsCount += 1;
+        }
+        
         //Debug.Log(starsCount);
         //Debug.Log(GameObject.Find("Coins").transform.childCount);
         //Debug.Log(scoreCoin);
