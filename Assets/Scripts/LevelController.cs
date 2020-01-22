@@ -12,16 +12,19 @@ public class LevelController : MonoBehaviour {
     //public GameObject fadeOutPanel;
     //public GameObject fadeInPanel;
     //public GameObject youWonPanel;
-    //public GameObject youLosePanel;
+    //public GameObject youlosePanel;
     public GameObject workspace;
     public GameObject playPanel;
-    public GameObject CompletePanel;
-    public GameObject LosePanel;
+    public GameObject completePanel;
+    public GameObject losePanel;
+    public GameObject helpPanel;
     public GameObject runButton;
     public GameObject stopButton;
     public Text level;
     public Text textCoin;
     public Text textKey;
+    public Text textMin;
+	public Sprite[] helpImages;
     //public Text textDiamond;
 
     public bool paused;
@@ -41,6 +44,8 @@ public class LevelController : MonoBehaviour {
     public GameObject[] blockys;
 	public int scoreCoin, keyCount;//, scoreDiamond;
 	
+	int helpIndex;
+	
 	//List<string> commands = new List<string>();
 	
 	void Awake() 
@@ -51,6 +56,7 @@ public class LevelController : MonoBehaviour {
     public void Start()
     {
         level.text = "Level " + Game.chapterNumber + "-" + Game.levelNumber;
+		textMin.text = "" + expectedPuzzlesNumber;
 		coins = GameObject.FindGameObjectsWithTag("Coin");
 		diamonds = GameObject.FindGameObjectsWithTag("Diamond");
         keys = GameObject.FindGameObjectsWithTag("Key");
@@ -59,6 +65,11 @@ public class LevelController : MonoBehaviour {
         portals = GameObject.FindGameObjectsWithTag("Portal");
         portals1 = GameObject.FindGameObjectsWithTag("Portal1");
         portals2 = GameObject.FindGameObjectsWithTag("Portal2");
+		if (keys.Length == 0)
+		{
+			GameObject.Find("ImageKey").GetComponent<Image>().enabled = false;
+			GameObject.Find("TextKey").GetComponent<Text>().enabled = false;
+		}
 		Reset();
     }
 	
@@ -68,14 +79,16 @@ public class LevelController : MonoBehaviour {
         keyCount = 0;
 		//scoreDiamond = 0;
         starsCount = 1;
-		textCoin.text = "x 0";
-        textKey.text = "x 0";
+		textCoin.text = "0/" + coins.Length;
+        textKey.text = "0";
+		if (keys.Length == 0) textKey.text = "-";
 		//textDiamond.text = "x 0";
 		EnableRunButton();
         workspace.GetComponent<Canvas>().enabled = false;
         playPanel.GetComponent<Canvas>().enabled = true;
-        CompletePanel.GetComponent<Canvas>().enabled = false;
-        LosePanel.GetComponent<Canvas>().enabled = false;
+        completePanel.GetComponent<Canvas>().enabled = false;
+        losePanel.GetComponent<Canvas>().enabled = false;
+        helpPanel.GetComponent<Canvas>().enabled = false;
 		foreach (var coin in coins)
 			coin.transform.localScale = new Vector3(1f, 1f, 1f);
 		foreach (var diamond in diamonds)
@@ -111,8 +124,8 @@ public class LevelController : MonoBehaviour {
 		{
 			workspace.GetComponent<Canvas>().enabled = false;
 			playPanel.GetComponent<Canvas>().enabled = false;
-			CompletePanel.GetComponent<Canvas>().enabled = false;
-			LosePanel.GetComponent<Canvas>().enabled = false;
+			completePanel.GetComponent<Canvas>().enabled = false;
+			losePanel.GetComponent<Canvas>().enabled = false;
 			Invoke("_LoadChapter", 8f);
 			return;
 		}
@@ -173,7 +186,7 @@ public class LevelController : MonoBehaviour {
             stars.transform.GetChild(i).gameObject.SetActive(false);
             noStars.transform.GetChild(i).gameObject.SetActive(true);
         }
-        CompletePanel.GetComponent<Canvas>().enabled = true;
+        completePanel.GetComponent<Canvas>().enabled = true;
         /*
         if (Game.levelNumber+1 > PlayerPrefs.GetInt("levelAt"))
         {
@@ -184,7 +197,9 @@ public class LevelController : MonoBehaviour {
 
     public void FailLevel()
     {     
-        LosePanel.GetComponent<Canvas>().enabled = true;
+		workspace.GetComponent<Canvas>().enabled = false;
+		playPanel.GetComponent<Canvas>().enabled = true;
+        losePanel.GetComponent<Canvas>().enabled = true;
     }
 
     public void Restart()
@@ -211,8 +226,7 @@ public class LevelController : MonoBehaviour {
     {
 		Invoke("_LoadChapter", 0.5f);
 		Game.sound.play("CLICK");
-
-        SceneManager.LoadScene("Menu");
+		//SceneManager.LoadScene("Menu");
     }
     private void LoadEndScreen()
     {
@@ -231,15 +245,15 @@ public class LevelController : MonoBehaviour {
 		if (type == "COIN") scoreCoin += 1;
         if (type == "KEY") keyCount += 1;
 		//if (type == "DIAMOND") scoreDiamond += 1;
-		textCoin.text = "x " + scoreCoin;
-        textKey.text = "x " + keyCount;
+		textCoin.text = scoreCoin + "/" + coins.Length;
+        textKey.text = "" + keyCount;
 		//textDiamond.text = "x " + scoreDiamond;
     }
 
     public void Open(string type)
     {
         if (type == "KEY") keyCount -= 1;
-        textKey.text = "x " + keyCount;
+        textKey.text = "" + keyCount;
     }
 	
 	// Zoom in button clicked
@@ -274,6 +288,75 @@ public class LevelController : MonoBehaviour {
     {
 		Invoke("_LoadChapter", 0.5f);
 		Game.sound.play("CLICK");
+    }
+	
+	// Help button clicked
+    public void OnHelpClicked()
+    {
+		workspace.GetComponent<Canvas>().enabled = false;
+		playPanel.GetComponent<Canvas>().enabled = false;
+		helpPanel.GetComponent<Canvas>().enabled = true;
+		helpIndex = 1;
+		RefreshHelp();
+		Game.sound.play("CLICK");
+    }
+	
+	// HelpQuit button clicked
+    public void OnHelpQuitClicked()
+    {
+		workspace.GetComponent<Canvas>().enabled = false;
+		playPanel.GetComponent<Canvas>().enabled = true;
+		helpPanel.GetComponent<Canvas>().enabled = false;
+		Game.sound.play("CLICK");
+    }
+	
+	// HelpBack button clicked
+    public void OnHelpBackClicked()
+    {
+		helpIndex -= 1;
+		RefreshHelp();
+		Game.sound.play("CLICK");
+    }
+	
+	// HelpNext button clicked
+    public void OnHelpNextClicked()
+    {
+		helpIndex += 1;
+		RefreshHelp();
+		Game.sound.play("CLICK");
+    }
+	
+	// Refresh Help
+    private void RefreshHelp()
+    {
+		var N = 16;
+		var helpMessages = new string[]
+		{
+			"", // 0
+			"Welcome to the tutorial!",
+			"This is the game scene.", // 2
+			"Hello! Blocky~",
+			"Get the diamond.", // 4
+			"Collect all coins.",
+			"Drag, and zoom.", // 6
+			"Switch to the workspace.",
+			"This is the workspace.", // 8
+			"These are command puzzles.",
+			"Connect the puzzles.", // 10
+			"Drag the puzzle.",
+			"That's it, connected.", // 12
+			"Rubbish bin here.",
+			"Run your commands.", // 14
+			"Target number of puzzles.",
+			"Here we go! Block++", // 16
+		};
+		if (helpIndex < 1) helpIndex = 1;
+		if (helpIndex > N) helpIndex = N;
+		GameObject.Find("HelpTitle").GetComponent<Text>().text = "Tutorial " + helpIndex + "/" + N;
+		GameObject.Find("HelpMessage").GetComponent<Text>().text = helpMessages[helpIndex];
+		GameObject.Find("HelpImage").GetComponent<Image>().sprite = helpImages[helpIndex];
+		GameObject.Find("HelpBack").GetComponent<Image>().enabled = (helpIndex != 1);
+		GameObject.Find("HelpNext").GetComponent<Image>().enabled = (helpIndex != N);
     }
 	
 	// Enable run button

@@ -40,8 +40,14 @@ namespace UBlockly.UGUI
         /// </summary>
         protected virtual void BuildMenu()
         {
+			Debug.Log("ClassicToolbox BuildMenu");
             foreach (var category in mConfig.BlockCategoryList)
             {
+				Debug.Log("category.CategoryNam " + category.CategoryName);
+				// to diable Loops/Procedures for Chapter1 Chapter2
+				if (Game.chapterNumber < 2 && category.CategoryName == "CONTROL") continue;
+				if (Game.chapterNumber < 3 && category.CategoryName == "PROCEDURE") continue;
+				
                 GameObject menuItem = GameObject.Instantiate(m_MenuItemPrefab, m_MenuListContent, false);
                 menuItem.name = category.CategoryName;
                 menuItem.GetComponentInChildren<Text>().text = I18n.Msg[category.CategoryName];
