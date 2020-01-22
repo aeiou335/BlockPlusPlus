@@ -246,6 +246,9 @@ namespace UBlockly.UGUI
         private void RegisterUIEvents()
         {
             //show mutator editor
+			
+			// to disable button click of Procedure puzzle (left-top corner small setting icon)
+			/*
             var mutatorEntry = ViewTransform.Find("Mutator_entry");
             if (mutatorEntry != null)
             {
@@ -253,6 +256,7 @@ namespace UBlockly.UGUI
                     DialogFactory.CreateMutatorDialog(mBlock)
                 );
             }
+			*/
         }
 
         /// <summary>
